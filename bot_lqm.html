@@ -1,0 +1,3219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ BOT CẮT FILE LQM — KHOI DZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --bg2: #0d1525;
+  --bg3: #111e35;
+  --card: #0f1a2e;
+  --border: #1a3050;
+  --border2: #0d4a8a;
+  --neon: #00d4ff;
+  --neon2: #0088cc;
+  --gold: #ffd700;
+  --silver: #c0c0c0;
+  --copper: #cd7f32;
+  --green: #00ff88;
+  --red: #ff4466;
+  --orange: #ff8800;
+  --purple: #aa44ff;
+  --pink: #ff44aa;
+  --text: #d0e8ff;
+  --text2: #7a9ac0;
+  --text3: #3a5070;
+  --shadow: 0 0 20px rgba(0,212,255,0.15);
+  --shadow2: 0 0 40px rgba(0,212,255,0.1);
+  --glow: 0 0 10px rgba(0,212,255,0.5);
+  --font-title: 'Orbitron', monospace;
+  --font-ui: 'Rajdhani', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-ui);overflow:hidden}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* === GRID BACKGROUND === */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0
+}
+
+/* ===== AUTH SCREEN ===== */
+#auth-screen{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:100;background:var(--bg);
+  background-image:radial-gradient(ellipse at 50% 0%, rgba(0,136,204,0.15) 0%, transparent 60%);
+}
+.auth-box{
+  width:420px;max-width:95vw;
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  padding:40px 36px;
+  box-shadow:0 0 60px rgba(0,136,204,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  position:relative;overflow:hidden;
+}
+.auth-box::before{
+  content:'';position:absolute;top:-1px;left:20%;right:20%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--neon),transparent);
+}
+.auth-logo{
+  text-align:center;margin-bottom:32px;
+}
+.auth-logo h1{
+  font-family:var(--font-title);font-size:22px;font-weight:900;
+  color:var(--neon);text-shadow:var(--glow);letter-spacing:2px;
+}
+.auth-logo p{font-size:13px;color:var(--text2);margin-top:6px}
+.auth-tabs{display:flex;gap:2px;margin-bottom:28px;background:var(--bg2);border-radius:8px;padding:3px}
+.auth-tab{
+  flex:1;padding:8px;text-align:center;font-family:var(--font-ui);font-size:14px;
+  font-weight:600;border-radius:6px;cursor:pointer;transition:all .2s;color:var(--text2);
+}
+.auth-tab.active{background:var(--border2);color:var(--neon);box-shadow:var(--shadow)}
+.auth-form .field{margin-bottom:16px}
+.auth-form label{display:block;font-size:12px;font-weight:600;color:var(--text2);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.auth-form input{
+  width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font-mono);font-size:13px;
+  outline:none;transition:border-color .2s;
+}
+.auth-form input:focus{border-color:var(--neon2)}
+.btn-primary{
+  width:100%;padding:12px;background:linear-gradient(135deg,var(--neon2),#005f99);
+  border:none;border-radius:8px;color:#fff;font-family:var(--font-ui);font-size:15px;
+  font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;margin-top:8px;
+  box-shadow:0 4px 20px rgba(0,136,204,0.3);
+}
+.btn-primary:hover{box-shadow:0 4px 30px rgba(0,212,255,0.4);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.auth-note{font-size:12px;color:var(--text3);text-align:center;margin-top:16px}
+.auth-note a{color:var(--neon2);text-decoration:none}
+.auth-error{
+  background:rgba(255,68,102,0.1);border:1px solid rgba(255,68,102,0.3);
+  border-radius:6px;padding:10px 12px;font-size:13px;color:var(--red);
+  margin-bottom:14px;display:none;
+}
+
+/* ===== MAIN APP LAYOUT ===== */
+#app{display:flex;height:100vh;overflow:hidden;position:relative;z-index:1}
+#app.hidden{display:none}
+
+/* === SIDEBAR === */
+#sidebar{
+  width:240px;min-width:240px;background:var(--bg2);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  transition:width .3s;z-index:10;
+}
+.sidebar-header{
+  padding:20px 16px 16px;border-bottom:1px solid var(--border);
+}
+.sidebar-logo{font-family:var(--font-title);font-size:13px;color:var(--neon);
+  font-weight:700;letter-spacing:1px;text-shadow:var(--glow)}
+.sidebar-user{
+  margin-top:10px;display:flex;align-items:center;gap:10px;
+  padding:8px 10px;background:var(--bg3);border-radius:8px;
+}
+.user-avatar{
+  width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--neon2),var(--purple));
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;
+  color:#fff;flex-shrink:0;font-family:var(--font-title);
+}
+.user-info{min-width:0}
+.user-name{font-size:13px;font-weight:600;color:var(--text);truncate;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-status{font-size:11px;color:var(--text2)}
+.user-status.has-key{color:var(--green)}
+.sidebar-nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-section{margin-bottom:4px}
+.nav-section-title{
+  font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:1.5px;padding:8px 8px 4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
+  cursor:pointer;transition:all .15s;font-size:14px;font-weight:500;
+  color:var(--text2);margin-bottom:2px;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(0,136,204,0.15);color:var(--neon);
+  border-left:2px solid var(--neon)}
+.nav-item .ni-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-item .ni-badge{
+  margin-left:auto;background:var(--red);color:#fff;border-radius:10px;
+  padding:2px 6px;font-size:10px;font-weight:700;
+}
+.sidebar-footer{
+  padding:12px;border-top:1px solid var(--border);
+}
+.btn-logout{
+  width:100%;padding:8px;background:transparent;border:1px solid var(--border);
+  border-radius:8px;color:var(--text2);font-family:var(--font-ui);font-size:13px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;
+  justify-content:center;gap:6px;
+}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+
+/* === MAIN CONTENT === */
+#right-col{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.page{display:none;flex:1;padding:24px}
+.page.active{display:flex;flex-direction:column}
+.page-header{margin-bottom:24px}
+.page-title{
+  font-family:var(--font-title);font-size:20px;font-weight:700;color:var(--neon);
+  text-shadow:var(--glow);letter-spacing:2px;
+}
+.page-subtitle{font-size:13px;color:var(--text2);margin-top:4px}
+
+/* === CARDS === */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:20px;margin-bottom:16px;
+  box-shadow:var(--shadow2);
+}
+.card-title{
+  font-family:var(--font-ui);font-size:13px;font-weight:700;
+  color:var(--text2);text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.card-title::before{content:'';width:3px;height:14px;background:var(--neon);border-radius:2px}
+
+/* === UPLOAD ZONE === */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:12px;padding:48px 20px;
+  text-align:center;transition:all .2s;cursor:pointer;background:rgba(0,136,204,0.02);
+  position:relative;
+}
+.upload-zone:hover,.upload-zone.drag-over{
+  border-color:var(--neon);background:rgba(0,212,255,0.04);
+  box-shadow:0 0 20px rgba(0,212,255,0.1);
+}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.upload-icon{font-size:48px;margin-bottom:12px}
+.upload-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
+.upload-sub{font-size:13px;color:var(--text2)}
+.upload-progress{display:none;margin-top:16px}
+.progress-bar{
+  height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-top:8px
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--neon2),var(--neon));
+  border-radius:3px;transition:width .3s;box-shadow:var(--glow);
+}
+
+/* === FILE INFO === */
+.file-info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.fi-stat{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:12px;text-align:center;
+}
+.fi-stat .fi-val{font-family:var(--font-title);font-size:20px;font-weight:700;color:var(--neon)}
+.fi-stat .fi-label{font-size:11px;color:var(--text2);margin-top:3px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px}
+
+/* === FILTER BUTTONS === */
+.filter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.filter-btn{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  cursor:pointer;transition:all .15s;font-size:13px;font-weight:600;color:var(--text);
+}
+.filter-btn:hover{border-color:var(--neon2);background:rgba(0,136,204,0.08);color:var(--neon)}
+.filter-btn .fb-icon{font-size:18px;flex-shrink:0}
+.filter-btn .fb-text{flex:1}
+.filter-btn .fb-count{font-family:var(--font-mono);font-size:11px;color:var(--text2)}
+.filter-btn.active{border-color:var(--neon);background:rgba(0,212,255,0.1);color:var(--neon)}
+
+/* === FILTER PANEL === */
+.filter-panel{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:16px;margin-top:12px;display:none;
+}
+.filter-panel.open{display:block}
+.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.filter-row:last-child{margin-bottom:0}
+.filter-label{font-size:12px;color:var(--text2);font-weight:600;white-space:nowrap}
+.filter-input{
+  padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:var(--font-mono);font-size:13px;outline:none;
+  transition:border .2s;flex:1;min-width:120px;max-width:200px;
+}
+.filter-input:focus{border-color:var(--neon2)}
+.chip{
+  padding:4px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+  font-size:12px;cursor:pointer;transition:all .15s;color:var(--text2);font-weight:600;
+}
+.chip:hover,.chip.active{background:rgba(0,136,204,0.2);border-color:var(--neon2);color:var(--neon)}
+
+/* === RESULT PANEL === */
+.result-panel{
+  background:linear-gradient(135deg,rgba(0,136,204,0.08),rgba(0,212,255,0.04));
+  border:1px solid var(--border2);border-radius:10px;padding:16px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.result-info h3{font-family:var(--font-title);font-size:16px;color:var(--neon)}
+.result-info p{font-size:12px;color:var(--text2);margin-top:3px}
+.result-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* === BUTTONS === */
+.btn{
+  padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-ui);
+  font-size:13px;font-weight:700;transition:all .15s;display:inline-flex;
+  align-items:center;gap:6px;letter-spacing:.5px;
+}
+.btn-neon{background:linear-gradient(135deg,var(--neon2),#005f99);color:#fff;
+  box-shadow:0 2px 12px rgba(0,136,204,0.3)}
+.btn-neon:hover{box-shadow:0 4px 20px rgba(0,212,255,0.4);transform:translateY(-1px)}
+.btn-green{background:linear-gradient(135deg,#00aa55,#007733);color:#fff}
+.btn-green:hover{box-shadow:0 4px 20px rgba(0,255,136,0.3)}
+.btn-red{background:linear-gradient(135deg,#cc2244,#881133);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-outline:hover{border-color:var(--neon);color:var(--neon)}
+.btn-gold{background:linear-gradient(135deg,#bb8800,#ffcc00);color:#111}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* === KEY PAGE === */
+.key-types{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.key-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:16px;text-align:center;position:relative;overflow:hidden;transition:all .2s;
+}
+.key-card:hover{transform:translateY(-2px)}
+.key-card.copper{border-color:rgba(205,127,50,0.4);box-shadow:0 0 15px rgba(205,127,50,0.1)}
+.key-card.silver{border-color:rgba(192,192,192,0.4);box-shadow:0 0 15px rgba(192,192,192,0.1)}
+.key-card.gold{border-color:rgba(255,215,0,0.4);box-shadow:0 0 15px rgba(255,215,0,0.1)}
+.key-emoji{font-size:32px;margin-bottom:8px}
+.key-name{font-family:var(--font-title);font-size:14px;font-weight:700;margin-bottom:4px}
+.key-card.copper .key-name{color:var(--copper)}
+.key-card.silver .key-name{color:var(--silver)}
+.key-card.gold .key-name{color:var(--gold)}
+.key-duration{font-size:12px;color:var(--text2);margin-bottom:10px}
+.key-count{
+  font-family:var(--font-title);font-size:24px;font-weight:900;margin-bottom:8px;
+}
+.key-card.copper .key-count{color:var(--copper)}
+.key-card.silver .key-count{color:var(--silver)}
+.key-card.gold .key-count{color:var(--gold)}
+
+/* === STATUS BAR === */
+.status-bar{
+  padding:8px 20px;background:var(--bg2);border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;font-size:12px;color:var(--text2);flex-shrink:0;
+}
+.status-item{display:flex;align-items:center;gap:5px}
+.status-dot{width:7px;height:7px;border-radius:50%}
+.dot-green{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot-red{background:var(--red)}
+.dot-yellow{background:var(--gold)}
+#db-reset-timer{font-family:var(--font-mono);font-size:11px;color:var(--orange);
+  margin-left:auto;background:rgba(255,136,0,0.08);padding:3px 8px;border-radius:4px;
+  border:1px solid rgba(255,136,0,0.2);}
+
+/* === ADMIN PANEL === */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:16px;text-align:center;position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.stat-card.blue::before{background:var(--neon2)}
+.stat-card.green::before{background:var(--green)}
+.stat-card.gold::before{background:var(--gold)}
+.stat-card.red::before{background:var(--red)}
+.stat-card.purple::before{background:var(--purple)}
+.stat-val{font-family:var(--font-title);font-size:28px;font-weight:900}
+.stat-card.blue .stat-val{color:var(--neon)}
+.stat-card.green .stat-val{color:var(--green)}
+.stat-card.gold .stat-val{color:var(--gold)}
+.stat-card.red .stat-val{color:var(--red)}
+.stat-card.purple .stat-val{color:var(--purple)}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px}
+
+/* === TABLE === */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{
+  padding:10px 12px;text-align:left;font-size:11px;font-weight:700;
+  color:var(--text2);text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.data-table td{
+  padding:10px 12px;border-bottom:1px solid rgba(26,48,80,0.5);
+  vertical-align:middle;
+}
+.data-table tr:hover td{background:rgba(0,136,204,0.05)}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;
+  font-size:11px;font-weight:700;white-space:nowrap;
+}
+.badge-green{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2)}
+.badge-red{background:rgba(255,68,102,0.1);color:var(--red);border:1px solid rgba(255,68,102,0.2)}
+.badge-blue{background:rgba(0,212,255,0.1);color:var(--neon);border:1px solid rgba(0,212,255,0.2)}
+.badge-gold{background:rgba(255,215,0,0.1);color:var(--gold);border:1px solid rgba(255,215,0,0.2)}
+.badge-gray{background:rgba(122,154,192,0.1);color:var(--text2);border:1px solid rgba(122,154,192,0.2)}
+
+/* === MODAL === */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;
+  display:none;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--card);border:1px solid var(--border2);border-radius:16px;
+  padding:28px;width:460px;max-width:95vw;max-height:85vh;overflow-y:auto;
+  position:relative;box-shadow:0 0 60px rgba(0,136,204,0.3);
+}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:var(--font-title);font-size:16px;color:var(--neon);font-weight:700}
+.modal-close{
+  width:28px;height:28px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .2s;
+}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;color:var(--text2);font-weight:600;
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.modal-field input,.modal-field select,.modal-field textarea{
+  width:100%;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font-mono);font-size:13px;
+  outline:none;transition:border .2s;
+}
+.modal-field input:focus,.modal-field select:focus,.modal-field textarea:focus{border-color:var(--neon2)}
+.modal-field textarea{resize:vertical;min-height:80px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* === TOAST === */
+#toast{
+  position:fixed;top:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;
+}
+.toast-item{
+  padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:slideIn .2s ease;min-width:240px;
+  display:flex;align-items:center;gap:10px;
+}
+.toast-item.success{background:#0d2b1a;border:1px solid rgba(0,255,136,0.3);color:var(--green)}
+.toast-item.error{background:#2b0d0d;border:1px solid rgba(255,68,102,0.3);color:var(--red)}
+.toast-item.info{background:#0d1b2b;border:1px solid rgba(0,212,255,0.3);color:var(--neon)}
+.toast-item.warn{background:#2b1a0d;border:1px solid rgba(255,136,0,0.3);color:var(--orange)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* === LOG === */
+.log-area{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  height:220px;overflow-y:auto;padding:10px;font-family:var(--font-mono);font-size:12px;
+}
+.log-line{padding:2px 0;display:flex;gap:8px}
+.log-time{color:var(--text3);flex-shrink:0}
+.log-level-INFO{color:var(--neon)}
+.log-level-FILE{color:var(--green)}
+.log-level-KEY{color:var(--gold)}
+.log-level-WARN{color:var(--orange)}
+.log-level-ERROR{color:var(--red)}
+.log-level-SPAM{color:var(--pink)}
+.log-user{color:var(--text2)}
+.log-msg{color:var(--text)}
+
+/* === BROADCAST === */
+.broadcast-preview{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:14px;margin-top:8px;font-size:13px;color:var(--text);min-height:60px;
+}
+
+/* === LOADING === */
+.loading-overlay{
+  position:fixed;inset:0;background:rgba(7,11,20,0.9);z-index:300;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  display:none;
+}
+.loading-overlay.active{display:flex}
+.spinner{
+  width:48px;height:48px;border:3px solid var(--border);
+  border-top-color:var(--neon);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+.loading-text{font-family:var(--font-title);font-size:14px;color:var(--neon);
+  letter-spacing:2px;animation:pulse 1.5s ease infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* === PAGINATION === */
+.pagination{display:flex;gap:4px;align-items:center;margin-top:12px;justify-content:center}
+.page-btn{
+  padding:5px 10px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text2);cursor:pointer;font-size:12px;transition:all .15s;font-family:var(--font-mono);
+}
+.page-btn:hover,.page-btn.active{background:rgba(0,136,204,0.2);border-color:var(--neon2);color:var(--neon)}
+
+/* === DOWNLOAD PROGRESS === */
+.dl-progress{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:16px;display:none;
+}
+.dl-progress.active{display:block}
+.dl-bar{height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;margin:8px 0}
+.dl-fill{
+  height:100%;background:linear-gradient(90deg,var(--neon2),var(--neon));
+  border-radius:4px;transition:width .3s;box-shadow:var(--glow);
+}
+.dl-info{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);
+  font-family:var(--font-mono)}
+
+/* Responsive */
+@media(max-width:768px){
+  #sidebar{width:64px;min-width:64px}
+  .sidebar-logo,.user-info,.nav-item span,.nav-section-title,.btn-logout span{display:none}
+  .nav-item{padding:10px;justify-content:center}
+  .user-avatar{margin:0 auto}
+  .sidebar-user{justify-content:center}
+  .key-types{grid-template-columns:1fr}
+  .filter-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== AUTH SCREEN ===== -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <h1>⚡ BOT CẮT FILE LQM</h1>
+      <p>KHOI DZ — Hệ thống quản lý & cắt file acc</p>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchTab('login')">Đăng nhập</div>
+      <div class="auth-tab" onclick="switchTab('register')">Đăng ký</div>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+
+    <!-- Login Form -->
+    <div id="form-login" class="auth-form">
+      <div class="field">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="login-user" placeholder="username" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Mật khẩu</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">ĐĂNG NHẬP ⚡</button>
+      <p class="auth-note">Mua key tại Telegram: <a href="https://t.me/motconboo" target="_blank">@motconboo</a></p>
+    </div>
+
+    <!-- Register Form -->
+    <div id="form-register" class="auth-form" style="display:none">
+      <div class="field">
+        <label>Tên hiển thị</label>
+        <input type="text" id="reg-name" placeholder="Nhập tên của bạn">
+      </div>
+      <div class="field">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="reg-user" placeholder="Chỉ dùng chữ thường, số, _">
+      </div>
+      <div class="field">
+        <label>Mật khẩu</label>
+        <input type="password" id="reg-pass" placeholder="Tối thiểu 6 ký tự">
+      </div>
+      <button class="btn-primary" onclick="doRegister()">TẠO TÀI KHOẢN ⚡</button>
+      <p class="auth-note">Mua key tại Telegram: <a href="https://t.me/motconboo" target="_blank">@motconboo</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app" class="hidden">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">⚡ LQM TOOL</div>
+      <div class="sidebar-user" id="sidebar-user">
+        <div class="user-avatar" id="sb-avatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="sb-name">User</div>
+          <div class="user-status" id="sb-status">Đang kiểm tra...</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Công cụ</div>
+        <div class="nav-item active" onclick="showPage('upload')" id="nav-upload">
+          <span class="ni-icon">📁</span><span>Upload & Cắt</span>
+        </div>
+        <div class="nav-item" onclick="showPage('filters')" id="nav-filters">
+          <span class="ni-icon">🔍</span><span>Cắt Nâng Cao</span>
+        </div>
+        <div class="nav-item" onclick="showPage('history')" id="nav-history">
+          <span class="ni-icon">📊</span><span>Lịch Sử</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Tài khoản</div>
+        <div class="nav-item" onclick="showPage('keys')" id="nav-keys">
+          <span class="ni-icon">🔑</span><span>Quản Lý Key</span>
+        </div>
+        <div class="nav-item" onclick="showPage('shop')" id="nav-shop">
+          <span class="ni-icon">🛒</span><span>Mua Key</span>
+        </div>
+      </div>
+      <div class="nav-section" id="admin-section" style="display:none">
+        <div class="nav-section-title">Admin</div>
+        <div class="nav-item" onclick="showPage('admin')" id="nav-admin">
+          <span class="ni-icon">🛡️</span><span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="showPage('admin-users')" id="nav-adminusers">
+          <span class="ni-icon">👥</span><span>Quản Lý Users</span>
+        </div>
+        <div class="nav-item" onclick="showPage('admin-keys')" id="nav-adminkeys">
+          <span class="ni-icon">🗝️</span><span>Quản Lý Keys</span>
+          <span class="ni-badge" id="nav-badge-codes" style="display:none;background:var(--gold);color:#111"></span>
+        </div>
+        <div class="nav-item" onclick="showPage('admin-logs')" id="nav-adminlogs">
+          <span class="ni-icon">📋</span><span>Live Log</span>
+        </div>
+        <div class="nav-item" onclick="showPage('admin-broadcast')" id="nav-broadcast">
+          <span class="ni-icon">📢</span><span>Broadcast</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="doLogout()">
+        <span>🚪</span><span>Đăng xuất</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div id="right-col">
+  <!-- MAIN CONTENT -->
+  <div id="main">
+
+    <!-- ===== PAGE: UPLOAD ===== -->
+    <div class="page active" id="page-upload">
+      <div class="page-header">
+        <div class="page-title">📁 UPLOAD & CẮT FILE</div>
+        <div class="page-subtitle">Tải lên file .txt acc để bắt đầu cắt và lọc</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📤 Tải lên file</div>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" accept=".txt" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0">
+          <div class="upload-icon">📄</div>
+          <div class="upload-title">Kéo thả hoặc nhấn để chọn file .txt</div>
+          <div class="upload-sub">Không giới hạn dung lượng | Hỗ trợ mọi kích cỡ file</div>
+          <div class="upload-progress" id="upload-progress">
+            <div style="font-size:13px;color:var(--text2)" id="upload-progress-text">Đang xử lý...</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Info -->
+      <div id="file-info-section" style="display:none">
+        <div class="card">
+          <div class="card-title">📊 Thông tin file</div>
+          <div class="file-info-grid" id="file-info-grid"></div>
+          <div id="tinh-trang-summary" style="font-size:13px;color:var(--text2);margin-top:8px;padding:10px;background:var(--bg2);border-radius:8px;display:none"></div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-title">⚡ Thao tác nhanh</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-neon" onclick="quickCut('all')">✂️ Cắt thường</button>
+            <button class="btn btn-outline" onclick="showPage('filters')">🔍 Cắt nâng cao</button>
+            <button class="btn btn-red btn-sm" onclick="clearFile()">🗑️ Xóa file</button>
+          </div>
+        </div>
+
+        <!-- Download Progress -->
+        <div id="dl-progress-section" class="dl-progress">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:14px;font-weight:700;color:var(--neon)" id="dl-title">Đang cắt...</span>
+            <button class="btn btn-red btn-sm" onclick="stopCut()" id="stop-btn">⏹ Dừng</button>
+          </div>
+          <div class="dl-bar"><div class="dl-fill" id="dl-fill" style="width:0%"></div></div>
+          <div class="dl-info">
+            <span id="dl-info-left">0 / 0 file</span>
+            <span id="dl-info-right">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: FILTERS ===== -->
+    <div class="page" id="page-filters">
+      <div class="page-header">
+        <div class="page-title">🔍 CẮT NÂNG CAO</div>
+        <div class="page-subtitle">Lọc và cắt file theo nhiều tiêu chí</div>
+      </div>
+
+      <div id="no-file-warning" class="card" style="text-align:center;padding:40px">
+        <div style="font-size:48px;margin-bottom:12px">📭</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)">Chưa có file!</div>
+        <div style="font-size:13px;color:var(--text2);margin:8px 0 16px">Hãy upload file .txt trước</div>
+        <button class="btn btn-neon" onclick="showPage('upload')">📤 Upload file</button>
+      </div>
+
+      <div id="filter-content" style="display:none">
+        <div class="card">
+          <div class="card-title">⚙️ Cài đặt xuất file</div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <label style="font-size:13px;color:var(--text2)">Số acc / file:</label>
+            <input type="number" id="acc-per-file" value="200" min="1" max="100000"
+              style="width:100px;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);
+              border-radius:6px;color:var(--neon);font-family:var(--font-mono);font-size:14px;
+              font-weight:700;outline:none;text-align:center">
+            <label style="font-size:13px;color:var(--text2)">Tên file:</label>
+            <input type="text" id="custom-filename" placeholder="Tên file (tùy chọn)"
+              style="flex:1;min-width:150px;max-width:220px;padding:7px 10px;background:var(--bg2);
+              border:1px solid var(--border);border-radius:6px;color:var(--text);
+              font-family:var(--font-mono);font-size:13px;outline:none">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎯 Chọn loại cắt</div>
+          <div class="filter-grid" id="filter-grid"></div>
+        </div>
+
+        <!-- Dynamic filter panels per type -->
+        <div id="panel-skin" class="filter-panel">
+          <div class="filter-row">
+            <span class="filter-label">Khoảng skin:</span>
+            <input class="filter-input" id="skin-min" type="number" placeholder="Min (VD: 100)">
+            <span style="color:var(--text2)">—</span>
+            <input class="filter-input" id="skin-max" type="number" placeholder="Max (VD: 500)">
+            <span class="filter-label" style="margin-left:8px">Hoặc:</span>
+            <input class="filter-input" id="skin-plus" type="number" placeholder="500+ (nhập 500)">
+            <span style="font-size:12px;color:var(--text3)">+</span>
+          </div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('skin')">✂️ Cắt</button>
+        </div>
+
+        <div id="panel-tenskin" class="filter-panel">
+          <div class="filter-row">
+            <span class="filter-label">Tên skin:</span>
+            <input class="filter-input" id="tenskin-input" placeholder="VD: Thám Tử, Biker..." style="flex:1;max-width:300px">
+          </div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('tenskin')">✂️ Cắt</button>
+        </div>
+
+        <div id="panel-so" class="filter-panel">
+          <div class="filter-row">
+            <span class="filter-label">Sò:</span>
+            <input class="filter-input" id="so-min" type="number" placeholder="Min">
+            <span style="color:var(--text2)">—</span>
+            <input class="filter-input" id="so-max" type="number" placeholder="Max (trống = không giới hạn)">
+          </div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('so')">✂️ Cắt</button>
+        </div>
+
+        <div id="panel-quanhuy" class="filter-panel">
+          <div class="filter-row">
+            <span class="filter-label">Quân Huy:</span>
+            <input class="filter-input" id="qh-min" type="number" placeholder="Min">
+            <span style="color:var(--text2)">—</span>
+            <input class="filter-input" id="qh-max" type="number" placeholder="Max (trống = không giới hạn)">
+          </div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('quanhuy')">✂️ Cắt</button>
+        </div>
+
+        <div id="panel-rank" class="filter-panel">
+          <div class="filter-row">
+            <span class="filter-label">Rank:</span>
+            <select id="rank-select" class="filter-input" style="max-width:160px">
+              <option value="">-- Chọn rank --</option>
+              <option value="đồng">🟤 Đồng</option>
+              <option value="bạc">⚪ Bạc</option>
+              <option value="vàng">🟡 Vàng</option>
+              <option value="bạch kim">🔵 Bạch Kim</option>
+              <option value="kim cương">💎 Kim Cương</option>
+              <option value="tinh anh">🔮 Tinh Anh</option>
+              <option value="cao thủ">⚔️ Cao Thủ</option>
+              <option value="đại cao thủ">🌟 Đại Cao Thủ</option>
+              <option value="chiến tướng">🦅 Chiến Tướng</option>
+              <option value="chiến thần">👑 Chiến Thần</option>
+            </select>
+            <span class="filter-label">Sao:</span>
+            <input class="filter-input" id="rank-star-min" type="number" placeholder="Min sao">
+            <span style="color:var(--text2)">—</span>
+            <input class="filter-input" id="rank-star-max" type="number" placeholder="Max sao">
+          </div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('rank')">✂️ Cắt</button>
+        </div>
+
+        <div id="panel-ban" class="filter-panel">
+          <div class="filter-row">
+            <span class="filter-label">Loại ban:</span>
+            <div class="chip active" data-ban="none" onclick="selectBan(this)">✅ Không ban</div>
+            <div class="chip" data-ban="ngay" onclick="selectBan(this)">📅 Ban ngày</div>
+            <div class="chip" data-ban="thang" onclick="selectBan(this)">🗓️ Ban tháng</div>
+            <div class="chip" data-ban="nam" onclick="selectBan(this)">📆 Ban năm</div>
+          </div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('ban')">✂️ Cắt</button>
+        </div>
+
+        <div id="panel-tinhtrang" class="filter-panel">
+          <div class="filter-row" id="tt-chips" style="flex-wrap:wrap;gap:6px"></div>
+          <button class="btn btn-neon btn-sm" onclick="applyFilter('tinhtrang')" style="margin-top:8px">✂️ Cắt</button>
+        </div>
+
+        <!-- Result preview -->
+        <div id="result-section" style="display:none" class="card">
+          <div class="card-title">📦 Kết quả lọc</div>
+          <div class="result-panel">
+            <div class="result-info">
+              <h3 id="result-title">—</h3>
+              <p id="result-desc">Tìm thấy 0 acc</p>
+            </div>
+            <div class="result-actions">
+              <button class="btn btn-green" onclick="downloadFiltered()" id="download-btn">
+                ⬇️ Tải xuống
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="closeResult()">✕ Đóng</button>
+            </div>
+          </div>
+          <div id="dl-progress-filters" class="dl-progress" style="margin-top:12px">
+            <div class="dl-bar"><div class="dl-fill" id="dl-fill2" style="width:0%"></div></div>
+            <div class="dl-info">
+              <span id="dl-info2">Đang chuẩn bị...</span>
+              <span id="dl-pct2">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: HISTORY ===== -->
+    <div class="page" id="page-history">
+      <div class="page-header">
+        <div class="page-title">📊 LỊCH SỬ</div>
+        <div class="page-subtitle">Lịch sử upload và download của bạn</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📤 Lịch sử Upload</div>
+        <div id="history-upload-table" style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th>Thời gian</th><th>File</th><th>Acc</th><th>Dung lượng</th>
+            </tr></thead>
+            <tbody id="history-upload-body">
+              <tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">Chưa có lịch sử</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⬇️ Lịch sử Download</div>
+        <div id="history-download-table" style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th>Thời gian</th><th>Bộ lọc</th><th>File</th><th>Acc</th><th>MB</th>
+            </tr></thead>
+            <tbody id="history-download-body">
+              <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Chưa có lịch sử</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: KEYS ===== -->
+    <div class="page" id="page-keys">
+      <div class="page-header">
+        <div class="page-title">🔑 QUẢN LÝ KEY</div>
+        <div class="page-subtitle">Xem và kích hoạt key của bạn</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎫 NHẬP CODE KEY</div>
+        <div style="margin-bottom:12px;padding:10px 14px;background:rgba(0,136,204,0.08);border:1px solid rgba(0,136,204,0.2);border-radius:8px;font-size:12px;color:var(--text2);line-height:1.7">
+          💡 Mua key qua Telegram rồi nhập code vào đây để nhận key vào kho.<br>
+          <span style="color:var(--text3)">Định dạng: <span style="font-family:var(--font-mono);color:var(--neon)">LQM-DONG-XXXX-XXXX-XXXX</span></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="redeem-code-input" placeholder="Nhập code VD: LQM-DONG-XXXX-XXXX-XXXX"
+            style="flex:1;min-width:220px;padding:11px 14px;background:var(--bg2);
+            border:1px solid var(--border2);border-radius:8px;color:var(--neon);
+            font-family:var(--font-mono);font-size:14px;font-weight:700;
+            letter-spacing:1px;outline:none;text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase()"
+            onkeydown="if(event.key==='Enter')redeemCode()">
+          <button class="btn btn-gold" onclick="redeemCode()" style="padding:11px 24px;font-size:15px">
+            ✅ Nhập Code
+          </button>
+        </div>
+        <div id="redeem-msg" style="margin-top:10px;font-size:13px;display:none;padding:10px 12px;border-radius:8px;border:1px solid currentColor;background:rgba(0,0,0,0.2)"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏳ Trạng thái hiện tại</div>
+        <div id="key-status-panel"
+          style="padding:16px;background:var(--bg2);border-radius:10px;text-align:center">
+          <div style="font-size:32px;margin-bottom:8px" id="key-status-icon">❌</div>
+          <div style="font-family:var(--font-title);font-size:18px" id="key-status-text">Chưa có key</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px" id="key-status-sub">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📦 Kho key của bạn</div>
+        <div class="key-types">
+          <div class="key-card copper">
+            <div class="key-emoji">🟤</div>
+            <div class="key-name">KEY ĐỒNG</div>
+            <div class="key-duration">+1 giờ sử dụng</div>
+            <div class="key-count" id="inv-dong">0</div>
+            <button class="btn btn-sm" style="background:rgba(205,127,50,0.2);border:1px solid rgba(205,127,50,0.4);color:var(--copper);font-weight:700;border-radius:6px;cursor:pointer;width:100%"
+              onclick="activateKey('đồng')">Kích hoạt</button>
+          </div>
+          <div class="key-card silver">
+            <div class="key-emoji">⚪</div>
+            <div class="key-name">KEY BẠC</div>
+            <div class="key-duration">+24 giờ (1 ngày)</div>
+            <div class="key-count" id="inv-bac">0</div>
+            <button class="btn btn-sm" style="background:rgba(192,192,192,0.2);border:1px solid rgba(192,192,192,0.4);color:var(--silver);font-weight:700;border-radius:6px;cursor:pointer;width:100%"
+              onclick="activateKey('bạc')">Kích hoạt</button>
+          </div>
+          <div class="key-card gold">
+            <div class="key-emoji">🟡</div>
+            <div class="key-name">KEY VÀNG</div>
+            <div class="key-duration">+168 giờ (1 tuần)</div>
+            <div class="key-count" id="inv-vang">0</div>
+            <button class="btn btn-sm" style="background:rgba(255,215,0,0.2);border:1px solid rgba(255,215,0,0.4);color:var(--gold);font-weight:700;border-radius:6px;cursor:pointer;width:100%"
+              onclick="activateKey('vàng')">Kích hoạt</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="key-history-card">
+        <div class="card-title">📋 Lịch sử key</div>
+        <div id="key-history-list" style="font-size:13px">
+          <p style="color:var(--text3);text-align:center;padding:16px">Chưa có lịch sử</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: SHOP ===== -->
+    <div class="page" id="page-shop">
+      <div class="page-header">
+        <div class="page-title">🛒 MUA KEY</div>
+        <div class="page-subtitle">Liên hệ admin để mua key</div>
+      </div>
+
+      <div class="card" style="text-align:center;padding:40px">
+        <div style="font-size:60px;margin-bottom:16px">🔑</div>
+        <div style="font-family:var(--font-title);font-size:20px;color:var(--neon);margin-bottom:8px">MUA KEY QUA TELEGRAM</div>
+        <div style="font-size:15px;color:var(--text2);margin-bottom:24px">Liên hệ admin để nhận key sử dụng</div>
+        <a href="https://t.me/motconboo" target="_blank" style="text-decoration:none">
+          <button class="btn btn-neon" style="font-size:16px;padding:14px 32px">
+            📩 @motconboo — Nhắn ngay
+          </button>
+        </a>
+        <div style="margin-top:32px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:500px;margin:32px auto 0">
+          <div style="background:rgba(205,127,50,0.1);border:1px solid rgba(205,127,50,0.3);border-radius:10px;padding:16px">
+            <div style="font-size:28px">🟤</div>
+            <div style="font-family:var(--font-title);font-size:14px;color:var(--copper);margin:6px 0">KEY ĐỒNG</div>
+            <div style="font-size:12px;color:var(--text2)">+1 giờ sử dụng</div>
+          </div>
+          <div style="background:rgba(192,192,192,0.1);border:1px solid rgba(192,192,192,0.3);border-radius:10px;padding:16px">
+            <div style="font-size:28px">⚪</div>
+            <div style="font-family:var(--font-title);font-size:14px;color:var(--silver);margin:6px 0">KEY BẠC</div>
+            <div style="font-size:12px;color:var(--text2)">+1 ngày (24h)</div>
+          </div>
+          <div style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:10px;padding:16px">
+            <div style="font-size:28px">🟡</div>
+            <div style="font-family:var(--font-title);font-size:14px;color:var(--gold);margin:6px 0">KEY VÀNG</div>
+            <div style="font-size:12px;color:var(--text2)">+1 tuần (168h)</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:12px;color:var(--text3)">
+          Key cộng dồn • Miễn phí: 1 lượt/ngày • Thời gian trôi khi bạn đang dùng
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: ADMIN DASHBOARD ===== -->
+    <div class="page" id="page-admin">
+      <div class="page-header">
+        <div class="page-title">🛡️ ADMIN DASHBOARD</div>
+        <div class="page-subtitle">Giám sát hệ thống và người dùng</div>
+      </div>
+
+      <div class="stats-grid" id="admin-stats-grid"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">🟢 Hoạt động gần đây</div>
+          <div id="admin-recent-activity" style="font-size:13px;color:var(--text2)">
+            <p style="text-align:center;padding:16px;color:var(--text3)">Chưa có hoạt động</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Thống kê hôm nay</div>
+          <div id="admin-today-stats" style="font-size:13px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: ADMIN USERS ===== -->
+    <div class="page" id="page-admin-users">
+      <div class="page-header">
+        <div class="page-title">👥 QUẢN LÝ USERS</div>
+        <div class="page-subtitle">Danh sách và chi tiết người dùng</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+          <input type="text" id="user-search" placeholder="🔍 Tìm theo tên, username..."
+            style="flex:1;min-width:180px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);
+            border-radius:8px;color:var(--text);font-size:13px;outline:none">
+          <div style="display:flex;gap:6px">
+            <div class="chip active" data-filter="all" onclick="filterUsers(this)">Tất cả</div>
+            <div class="chip" data-filter="key" onclick="filterUsers(this)">Có key</div>
+            <div class="chip" data-filter="free" onclick="filterUsers(this)">Còn free</div>
+            <div class="chip" data-filter="nokey" onclick="filterUsers(this)">Hết lượt</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th>Người dùng</th><th>Trạng thái</th><th>Kho key</th>
+              <th>Acc cắt</th><th>Lần cuối</th><th>Thao tác</th>
+            </tr></thead>
+            <tbody id="users-table-body">
+              <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="users-pagination"></div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: ADMIN KEYS ===== -->
+    <div class="page" id="page-admin-keys">
+      <div class="page-header">
+        <div class="page-title">🗝️ QUẢN LÝ KEYS</div>
+        <div class="page-subtitle">Thêm/xóa key cho người dùng</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎫 TẠO CODE KEY</div>
+
+        <!-- ── Preset codes info ── -->
+        <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.25);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:13px;font-weight:700;color:var(--gold)">🔒 300 Code ẩn sẵn trong hệ thống</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:3px">100🟤 Đồng (+1h) &nbsp;·&nbsp; 100⚪ Bạc (+24h) &nbsp;·&nbsp; 100🟡 Vàng (+168h) — Chỉ admin thấy.</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="exportAllUnusedCodes()" style="font-size:13px;padding:9px 14px">
+            💾 Xuất chưa dùng
+          </button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:12px">
+          <div>
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Loại key</label>
+            <select id="genkey-type" style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none">
+              <option value="đồng">🟤 Đồng (+1h)</option>
+              <option value="bạc">⚪ Bạc (+24h)</option>
+              <option value="vàng">🟡 Vàng (+168h)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Số lượng code</label>
+            <input type="number" id="genkey-count" value="1" min="1" max="100"
+              style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;text-align:center">
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Ghi chú</label>
+            <input type="text" id="genkey-note" placeholder="VD: Khách A, Telegram..."
+              style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none">
+          </div>
+          <button class="btn btn-gold" onclick="generateKeyCodes()" style="white-space:nowrap">✨ Tạo Code</button>
+        </div>
+        <!-- Generated codes output -->
+        <div id="genkey-result" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-size:13px;font-weight:700;color:var(--green)" id="genkey-result-title">✅ Code đã tạo:</span>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-outline btn-sm" onclick="copyAllCodes()">📋 Copy tất cả</button>
+              <button class="btn btn-outline btn-sm" onclick="exportCodesToTxt()">💾 Xuất .txt</button>
+            </div>
+          </div>
+          <div id="genkey-codes-list" style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:12px;font-family:var(--font-mono);font-size:13px;line-height:2;max-height:220px;overflow-y:auto"></div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text3);text-align:right" id="genkey-count-info"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Danh sách Code đã tạo</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <div class="chip active" data-cfilter="all" onclick="filterCodes(this)">Tất cả</div>
+          <div class="chip" data-cfilter="unused" onclick="filterCodes(this)">Chưa dùng</div>
+          <div class="chip" data-cfilter="used" onclick="filterCodes(this)">Đã dùng</div>
+          <button class="btn btn-red btn-sm" onclick="deleteUsedCodes()" style="margin-left:auto">🗑️ Xóa đã dùng</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th>Code</th><th>Loại</th><th>Trạng thái</th><th>Dùng bởi</th><th>Tạo lúc</th><th>Ghi chú</th><th></th>
+            </tr></thead>
+            <tbody id="codes-table-body">
+              <tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">Chưa có code nào</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">➕ Cộng key trực tiếp cho user</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end">
+          <div>
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Username / ID</label>
+            <input type="text" id="addkey-target" placeholder="@username hoặc ID"
+              style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);
+              border-radius:8px;color:var(--text);font-size:13px;outline:none">
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Loại key</label>
+            <select id="addkey-type"
+              style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);
+              border-radius:8px;color:var(--text);font-size:13px;outline:none">
+              <option value="đồng">🟤 Đồng (+1h)</option>
+              <option value="bạc">⚪ Bạc (+24h)</option>
+              <option value="vàng">🟡 Vàng (+168h)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Số lượng</label>
+            <input type="number" id="addkey-qty" value="1" min="1"
+              style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);
+              border-radius:8px;color:var(--text);font-size:13px;outline:none;text-align:center">
+          </div>
+          <button class="btn btn-green" onclick="adminAddKey()">✅ Cộng key</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗑️ Xóa key user</div>
+        <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Username / ID</label>
+            <input type="text" id="rmkey-target" placeholder="@username hoặc ID"
+              style="width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);
+              border-radius:8px;color:var(--text);font-size:13px;outline:none">
+          </div>
+          <button class="btn btn-red" onclick="adminRemoveKey()">🗑️ Xóa toàn bộ key</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔑 Danh sách users có key</div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th>User</th><th>Key đang chạy</th><th>Kho</th><th>Thao tác</th>
+            </tr></thead>
+            <tbody id="keylist-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: ADMIN LOGS ===== -->
+    <div class="page" id="page-admin-logs">
+      <div class="page-header">
+        <div class="page-title">📋 LIVE LOG</div>
+        <div class="page-subtitle">Nhật ký hoạt động hệ thống</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;color:var(--text2)">Hiển thị 100 dòng gần nhất</span>
+          <button class="btn btn-outline btn-sm" onclick="clearLogs()">🗑️ Xóa log</button>
+        </div>
+        <div class="log-area" id="log-area">
+          <div class="log-line">
+            <span class="log-time">--:--:--</span>
+            <span class="log-level-INFO">INFO</span>
+            <span class="log-user">System</span>
+            <span class="log-msg">Hệ thống sẵn sàng...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: BROADCAST ===== -->
+    <div class="page" id="page-admin-broadcast">
+      <div class="page-header">
+        <div class="page-title">📢 BROADCAST</div>
+        <div class="page-subtitle">Gửi thông báo đến tất cả người dùng</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✍️ Soạn thông báo</div>
+        <div class="modal-field">
+          <label>Nội dung thông báo</label>
+          <textarea id="broadcast-msg" rows="5" placeholder="Nhập nội dung thông báo..." oninput="previewBroadcast()"></textarea>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Xem trước:</div>
+        <div class="broadcast-preview" id="broadcast-preview">...</div>
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <button class="btn btn-neon" onclick="sendBroadcast()">📢 Gửi cho tất cả</button>
+          <button class="btn btn-outline" onclick="document.getElementById('broadcast-msg').value='';previewBroadcast()">🗑️ Xóa</button>
+        </div>
+        <div id="broadcast-result" style="margin-top:12px;font-size:13px;color:var(--text2)"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Lịch sử broadcast</div>
+        <div id="broadcast-history" style="font-size:13px;color:var(--text2)">
+          <p style="text-align:center;padding:16px;color:var(--text3)">Chưa có</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="status-bar">
+    <div class="status-item">
+      <div class="status-dot dot-green"></div>
+      <span id="sb-users-count">0 users</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot dot-yellow"></div>
+      <span id="sb-key-count">0 có key</span>
+    </div>
+    <span id="sb-file-info" style="color:var(--text3)">Chưa có file</span>
+    <span id="db-reset-timer">🕐 DB reset: --:--</span>
+  </div><!-- /status-bar -->
+  </div><!-- /right-col -->
+</div><!-- /app -->
+
+<!-- ===== MODALS ===== -->
+<!-- User Detail Modal -->
+<div class="modal-overlay" id="modal-user-detail">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-ud-title">Chi tiết user</span>
+      <div class="modal-close" onclick="closeModal('modal-user-detail')">✕</div>
+    </div>
+    <div id="modal-ud-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-user-detail')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Free Modal -->
+<div class="modal-overlay" id="modal-reset-free">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <span class="modal-title">🔄 Reset free</span>
+      <div class="modal-close" onclick="closeModal('modal-reset-free')">✕</div>
+    </div>
+    <p id="modal-rf-text" style="font-size:14px;color:var(--text2);margin-bottom:20px"></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-reset-free')">Hủy</button>
+      <button class="btn btn-green" onclick="confirmResetFree()" id="modal-rf-confirm-btn">✅ Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast"></div>
+
+<!-- ===== LOADING ===== -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">ĐANG XỬ LÝ...</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATABASE — localStorage (works on all browsers incl Safari iOS)
+// ═══════════════════════════════════════════════════════════
+const DB_NAME = 'lqm_tool';
+
+// Mỗi store là một key trong localStorage: "lqm_tool:store" → object map
+function _storeKey(store) { return DB_NAME + ':' + store; }
+
+function _loadStore(store) {
+  try {
+    const raw = localStorage.getItem(_storeKey(store));
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+
+function _saveStore(store, data) {
+  try {
+    localStorage.setItem(_storeKey(store), JSON.stringify(data));
+  } catch(e) {
+    console.error('localStorage save error:', e);
+  }
+}
+
+// keyPath map cho từng store
+const STORE_KEYPATH = {
+  users: 'username', keys: 'uid', history: 'uid',
+  logs: 'id', broadcasts: 'id', settings: 'key',
+  keycodes: 'code', keycodes_used: 'code',
+};
+
+// Auto-increment counters
+const _autoInc = {};
+
+function _getKeyVal(store, val) {
+  const kp = STORE_KEYPATH[store];
+  if (kp === 'id' && val[kp] === undefined) {
+    // autoIncrement
+    if (!_autoInc[store]) {
+      const existing = _loadStore(store);
+      const ids = Object.keys(existing).map(Number).filter(n => !isNaN(n));
+      _autoInc[store] = ids.length ? Math.max(...ids) + 1 : 1;
+    }
+    val = {...val, id: _autoInc[store]++};
+  }
+  return { key: val[kp], val };
+}
+
+async function initDB() { /* no-op for localStorage */ }
+
+async function dbGet(store, key) {
+  const data = _loadStore(store);
+  return data[key] ?? undefined;
+}
+
+async function dbPut(store, val) {
+  const {key, val: v} = _getKeyVal(store, val);
+  const data = _loadStore(store);
+  data[key] = v;
+  _saveStore(store, data);
+  return key;
+}
+
+async function dbDelete(store, key) {
+  const data = _loadStore(store);
+  delete data[key];
+  _saveStore(store, data);
+}
+
+async function dbGetAll(store) {
+  const data = _loadStore(store);
+  return Object.values(data);
+}
+
+async function dbAdd(store, val) {
+  const {key, val: v} = _getKeyVal(store, val);
+  const data = _loadStore(store);
+  if (data[key] !== undefined) throw new Error('Key already exists: ' + key);
+  data[key] = v;
+  _saveStore(store, data);
+  return key;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let currentUser = null;  // {username, fullname, isAdmin, ...}
+let parsedData  = [];    // [{full_line, skin, sss, ...}]
+let rawLines    = [];    // original txt lines
+let currentFilename = '';
+let filteredLines = []; // result of current filter
+let currentFilterName = '';
+let stopRequested = false;
+let isCutting = false;
+let dbResetInterval = null;
+let dbResetAt = null;   // timestamp when next reset happens
+let logInterval = null;
+let statsInterval = null;
+
+const ADMIN_USERNAME = 'admin';
+const FREE_DAILY_LIMIT = 1;
+const KEY_HOURS = {'đồng':1,'bạc':24,'vàng':168};
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  await initDB();
+  await ensureAdmin();
+  scheduleDbReset();
+  setInterval(updateKeyCountdown, 1000);
+  setInterval(updateStatusBar, 3000);
+  updateStatusBar();
+
+  // Upload zone events
+  const zone  = document.getElementById('upload-zone');
+  const input = document.getElementById('file-input');
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', ()  => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  });
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) { processFile(file); input.value = ''; }
+  });
+
+  // Modal overlay close on backdrop click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // Enter key for auth forms
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const authScreen = document.getElementById('auth-screen');
+    if (authScreen && authScreen.offsetParent !== null) {
+      if (document.getElementById('form-login').style.display !== 'none') doLogin();
+      else doRegister();
+    }
+  });
+});
+
+async function ensureAdmin() {
+  const admin = await dbGet('users', ADMIN_USERNAME);
+  if (!admin) {
+    await dbPut('users', {
+      username: ADMIN_USERNAME,
+      fullname: 'ADMIN KHOI DZ',
+      password: 'admin123',
+      isAdmin: true,
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(),
+      totalActions: 0,
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LOAD PRESET CODES vào DB — chỉ admin, chỉ 1 lần
+// ═══════════════════════════════════════════════════════════
+async function loadPresetCodes() {
+  const flag = await dbGet('settings', 'preset_loaded_v1');
+  if (flag) return;
+
+  const now = new Date().toISOString();
+  let total = 0;
+  for (const [type, codes] of Object.entries(PRESET_CODES)) {
+    for (const code of codes) {
+      try {
+        await dbPut('keycodes', {
+          code, type,
+          note: 'Preset ẩn sẵn',
+          created_by: 'admin',
+          created_at: now,
+        });
+        total++;
+      } catch(e) {}
+    }
+  }
+  await dbPut('settings', { key: 'preset_loaded_v1', value: true, at: now });
+  addLog('admin', 'ADMIN KHOI DZ', `Load ${total} preset code vào kho`, 'KEY');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DB RESET (mỗi 1 giờ)
+// ═══════════════════════════════════════════════════════════
+function scheduleDbReset() {
+  const nextReset = Date.now() + 3600000; // 1 hour
+  dbResetAt = nextReset;
+  dbResetInterval = setInterval(async () => {
+    await performDbReset();
+    dbResetAt = Date.now() + 3600000;
+    showToast('🔄 Database đã được reset!', 'info');
+    addLog('System', 'System', 'DB reset định kỳ', 'WARN');
+  }, 3600000);
+  // Update countdown every second
+  setInterval(updateResetTimer, 1000);
+}
+
+async function performDbReset() {
+  // Reset: clear file session data (processed files) but keep users/keys/settings
+  // Clear logs older than 1 hour
+  const allLogs = await dbGetAll('logs');
+  const cutoff = Date.now() - 3600000;
+  for (const log of allLogs) {
+    if (new Date(log.time).getTime() < cutoff) {
+      await dbDelete('logs', log.id);
+    }
+  }
+  // Reset daily free usage for all users
+  const allKeys = await dbGetAll('keys');
+  const today = new Date().toISOString().slice(0,10);
+  for (const kd of allKeys) {
+    if (kd.free_date !== today) {
+      kd.free_date = '';
+      kd.free_used = 0;
+      await dbPut('keys', kd);
+    }
+  }
+  // If current user has file loaded, clear session file data
+  parsedData = [];
+  rawLines = [];
+  currentFilename = '';
+  filteredLines = [];
+  updateFileInfoSection();
+}
+
+function updateResetTimer() {
+  if (!dbResetAt) return;
+  const remaining = Math.max(0, dbResetAt - Date.now());
+  const m = Math.floor(remaining / 60000);
+  const s = Math.floor((remaining % 60000) / 1000);
+  const el = document.getElementById('db-reset-timer');
+  if (el) el.textContent = `🕐 DB reset: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    t.classList.toggle('active', (i === 0 && tab==='login') || (i===1 && tab==='register'));
+  });
+  document.getElementById('form-login').style.display = tab==='login' ? '' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? '' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function doLogin() {
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  if (!user || !pass) { showAuthError('Vui lòng nhập đầy đủ!'); return; }
+
+  const btn = document.querySelector('#form-login .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'ĐANG XỬ LÝ...'; }
+
+  try {
+    if (!db) await initDB();
+    await ensureAdmin();
+
+    const userData = await dbGet('users', user);
+    if (!userData || userData.password !== pass) {
+      showAuthError('Tên đăng nhập hoặc mật khẩu sai!');
+      return;
+    }
+    userData.lastActive = new Date().toISOString();
+    userData.totalActions = (userData.totalActions || 0) + 1;
+    await dbPut('users', userData);
+    currentUser = userData;
+    onLoginSuccess();
+  } catch(e) {
+    showAuthError('Lỗi hệ thống: ' + e.message + ' — Thử tải lại trang!');
+    console.error('Login error:', e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'ĐĂNG NHẬP ⚡'; }
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const user = document.getElementById('reg-user').value.trim().toLowerCase();
+  const pass = document.getElementById('reg-pass').value;
+
+  if (!name || !user || !pass) { showAuthError('Vui lòng điền đầy đủ!'); return; }
+  if (!/^[a-z0-9_]{3,20}$/.test(user)) {
+    showAuthError('Username: 3-20 ký tự, chỉ dùng a-z, 0-9, _'); return;
+  }
+  if (pass.length < 6) { showAuthError('Mật khẩu tối thiểu 6 ký tự!'); return; }
+  if (user === ADMIN_USERNAME) { showAuthError('Username không hợp lệ!'); return; }
+
+  const btn = document.querySelector('#form-register .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'ĐANG TẠO...'; }
+
+  try {
+    if (!db) await initDB();
+    const existing = await dbGet('users', user);
+    if (existing) { showAuthError('Username đã tồn tại!'); return; }
+
+    const newUser = {
+      username: user, fullname: name, password: pass,
+      isAdmin: false, createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(), totalActions: 1,
+    };
+    await dbPut('users', newUser);
+    await dbPut('keys', {
+      uid: user,
+      inventory: {đồng:0, bạc:0, vàng:0},
+      remaining_seconds: 0, last_save_time: new Date().toISOString(),
+      is_activated: false, free_used: 0, free_date: '',
+    });
+    currentUser = newUser;
+    addLog(user, name, 'Đăng ký tài khoản mới', 'INFO');
+    onLoginSuccess();
+  } catch(e) {
+    showAuthError('Lỗi hệ thống: ' + e.message + ' — Thử tải lại trang!');
+    console.error('Register error:', e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'TẠO TÀI KHOẢN ⚡'; }
+  }
+}
+
+function onLoginSuccess() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').classList.remove('hidden');
+
+  const u = currentUser;
+  document.getElementById('sb-avatar').textContent = (u.fullname||u.username)[0].toUpperCase();
+  document.getElementById('sb-name').textContent = u.fullname || u.username;
+
+  if (u.isAdmin) {
+    document.getElementById('admin-section').style.display = '';
+    // Load 300 preset code ẩn sẵn vào kho (chỉ lần đầu)
+    loadPresetCodes();
+  } else {
+    document.getElementById('admin-section').style.display = 'none';
+  }
+
+  // Init key data for user if not exists
+  getKeyData(u.username).then(() => updateKeyStatus());
+  updateStatusBar();
+  updateFileInfoSection(); // show empty state
+  showPage('upload');
+
+  statsInterval = setInterval(() => {
+    if (document.getElementById('page-admin').classList.contains('active')) renderAdminDashboard();
+    updateStatusBar();
+    updateKeyStatus();
+  }, 5000);
+
+  addLog(u.username, u.fullname||u.username, 'Đăng nhập thành công', 'INFO');
+}
+
+function doLogout() {
+  currentUser = null;
+  parsedData = []; rawLines = []; currentFilename = ''; filteredLines = [];
+  clearInterval(statsInterval); statsInterval = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('auth-screen').style.display = '';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + pageId);
+  if (page) page.classList.add('active');
+  const nav = document.getElementById('nav-' + pageId);
+  if (nav) nav.classList.add('active');
+
+  // Special page init
+  if (pageId === 'keys') { updateKeyStatus(); }
+  if (pageId === 'filters') { renderFilterPage(); }
+  if (pageId === 'history') { renderHistory(); }
+  if (pageId === 'admin') { renderAdminDashboard(); }
+  if (pageId === 'admin-users') { renderAdminUsers(); }
+  if (pageId === 'admin-keys') { renderAdminKeys(); }
+  if (pageId === 'admin-logs') { renderLogs(); }
+  if (pageId === 'admin-broadcast') { renderBroadcastHistory(); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FILE UPLOAD & PARSE
+// ═══════════════════════════════════════════════════════════
+
+async function processFile(file) {
+  if (!file.name.toLowerCase().endsWith('.txt')) {
+    showToast('⚠️ Chỉ hỗ trợ file .txt!', 'error'); return;
+  }
+
+  // Check permission
+  const canUse = await checkPermission();
+  if (!canUse) return;
+
+  // Show progress
+  const prog = document.getElementById('upload-progress');
+  const progFill = document.getElementById('progress-fill');
+  const progText = document.getElementById('upload-progress-text');
+  prog.style.display = 'block';
+
+  try {
+    progText.textContent = `Đang đọc ${file.name}...`;
+    progFill.style.width = '20%';
+
+    const text = await readFileText(file);
+    progFill.style.width = '50%';
+    progText.textContent = 'Đang phân tích...';
+
+    // Parse lines
+    const allLines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+    progFill.style.width = '70%';
+    progText.textContent = 'Lọc trùng...';
+
+    const {unique, duplicates} = deduplicate(allLines);
+    progFill.style.width = '85%';
+    progText.textContent = 'Parse acc...';
+
+    rawLines = unique;
+    parsedData = unique.map(l => parseAccLine(l)).filter(Boolean);
+    currentFilename = file.name.replace(/\.txt$/i,'');
+    progFill.style.width = '100%';
+
+    // Log
+    const sizeMB = (file.size / 1048576).toFixed(2);
+    await logUpload(currentUser.username, currentFilename, +sizeMB, rawLines.length);
+
+    progText.textContent = `✅ Hoàn tất! ${rawLines.length.toLocaleString()} acc`;
+    setTimeout(() => { prog.style.display='none'; progFill.style.width='0%'; }, 1500);
+
+    updateFileInfoSection(file.name, sizeMB, allLines.length, rawLines.length, duplicates);
+    showToast(`✅ Đã tải ${rawLines.length.toLocaleString()} acc!`, 'success');
+    addLog(currentUser.username, currentUser.fullname,
+      `Upload: ${file.name} (${sizeMB}MB, ${rawLines.length.toLocaleString()}acc)`, 'FILE');
+  } catch(e) {
+    prog.style.display='none';
+    showToast('❌ Lỗi đọc file: ' + e.message, 'error');
+  }
+}
+
+function readFileText(file) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = e => res(e.target.result);
+    reader.onerror = () => rej(new Error('Không đọc được file'));
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+function deduplicate(lines) {
+  const seen = new Set(); const unique = [];
+  for (const line of lines) {
+    const {tk, mk} = extractTkMk(line);
+    if (tk && mk) {
+      const key = tk.toLowerCase() + ':' + mk;
+      if (!seen.has(key)) { seen.add(key); unique.push(line); }
+    } else {
+      unique.push(line);
+    }
+  }
+  return { unique, duplicates: lines.length - unique.length };
+}
+
+function extractTkMk(line) {
+  let s = line.replace(/^FINAL\s*=\s*/i, '').trim();
+  if (s.includes('result =')) {
+    const rp = s.split('result =')[1].trim();
+    const head = rp.includes(' | ') ? rp.split(' | ')[0] : rp;
+    if (head.includes(':')) {
+      const [tk, mk] = head.split(':', 2);
+      return {tk: tk.trim(), mk: mk.trim()};
+    }
+  }
+  const head = s.includes(' | ') ? s.split(' | ')[0] : s;
+  const sep = head.includes(':') ? ':' : (head.includes('|') ? '|' : null);
+  if (!sep) return {tk:null, mk:null};
+  const [tk, mk] = head.split(sep, 2);
+  return {tk: tk?.trim() || null, mk: mk?.trim() || null};
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PARSE ACC LINE
+// ═══════════════════════════════════════════════════════════
+const TINH_TRANG_CONFIG = {
+  'acc full':            ['Acc Full',            '✅'],
+  'acc dính số':         ['Acc Dính Số',         '📱'],
+  'acc dính mail':       ['Acc Dính Mail',       '📧'],
+  'acc dính fb':         ['Acc Dính FB',         '🔵'],
+  'acc trắng thông tin': ['Acc Trắng Thông Tin', '⬜'],
+  'acc trắng lỗi pass':  ['Acc Trắng Lỗi Pass', '🔑'],
+};
+const TINH_TRANG_ALIAS = {
+  'acc dính mỗi số': 'acc dính số',
+  'acc dính email':  'acc dính mail',
+};
+const RANK_ORDER = ['đồng','bạc','vàng','bạch kim','kim cương','tinh anh','cao thủ','đại cao thủ','chiến tướng','chiến thần'];
+const RANK_EMOJI = {'đồng':'🟤','bạc':'⚪','vàng':'🟡','bạch kim':'🔵','kim cương':'💎','tinh anh':'🔮','cao thủ':'⚔️','đại cao thủ':'🌟','chiến tướng':'🦅','chiến thần':'👑'};
+
+function normalizeStatusKey(raw) {
+  let s = raw.toLowerCase().trim();
+  for (const [alias, canonical] of Object.entries(TINH_TRANG_ALIAS)) {
+    if (s.includes(alias)) { s = canonical; break; }
+  }
+  for (const key of Object.keys(TINH_TRANG_CONFIG)) {
+    if (s.includes(key)) return key;
+  }
+  return s;
+}
+
+function parseAccLine(line) {
+  line = line.trim();
+  if (!line) return null;
+  const d = {
+    full_line: line, skin: 0, sss: 0, anime: 0, ss: 0,
+    banned: false, ban_type: 'none', so: 0, quan_huy: 0,
+    status: '', status_key: '', skin_list: '', rank: '', sao: 0,
+  };
+  let m;
+  m = line.match(/(?:SKIN|Skin)\s*:\s*(\d+)/); if (m) d.skin = +m[1];
+
+  if (/SSS\s*:\s*(?:No Skin|0\s*\[NO)/i.test(line)) { d.sss = 0; }
+  else { m = line.match(/SSS\s*:\s*(\d+)/); if (m) d.sss = +m[1]; }
+
+  m = line.match(/(?:ANIME|Anime)\s*:\s*(\d+)/); if (m) d.anime = +m[1];
+  m = line.match(/(?<![S])SS\s*:\s*(\d+)/); if (m) d.ss = +m[1];
+
+  // Ban detection
+  const banNew = line.match(/BAND\s*:\s*YES\s*\[[\d:]+\s+(\d{2}-\d{2}-\d{4})\s+-\s+[\d:]+\s+(\d{2}-\d{2}-\d{4})\]/i);
+  const banNew2 = line.match(/Ban\s*:\s*Yes\s*\[\d+\s+\S+\s+\([\d:]+\s+[\d/]+\s+-\s+[\d:]+\s+[\d/]+\)\]/i);
+  const banOld = line.match(/Ban:\s*Yes\s*\[(.+?)\]/);
+  if (banNew) {
+    d.banned = true;
+    try {
+      const d1 = parseDMY(banNew[1]); const d2 = parseDMY(banNew[2]);
+      const diff = (d2 - d1) / 86400000;
+      d.ban_type = diff <= 31 ? 'ngay' : diff <= 366 ? 'thang' : 'nam';
+    } catch { d.ban_type = 'khac'; }
+  } else if (banNew2) {
+    d.banned = true;
+    const bt = banNew2[0].toLowerCase();
+    d.ban_type = bt.includes('ngày')||bt.includes('ngay') ? 'ngay' :
+                 bt.includes('tháng')||bt.includes('thang') ? 'thang' :
+                 bt.includes('năm')||bt.includes('nam') ? 'nam' : 'khac';
+  } else if (banOld) {
+    d.banned = true;
+    const bi = banOld[1].toLowerCase();
+    d.ban_type = bi.includes('ngày') ? 'ngay' : bi.includes('tháng') ? 'thang' :
+                 bi.includes('năm') ? 'nam' : 'khac';
+  }
+
+  m = line.match(/(?:SÒ|Sò)\s*:\s*(\d+)/); if (m) d.so = +m[1];
+  m = line.match(/(?:QH|Qu[aâ]n\s*Huy)\s*:\s*(\d+)/i); if (m) d.quan_huy = +m[1];
+  m = line.match(/(?:TÌNH TRẠNG|Tình Trạng)\s*:\s*(.+?)(?:\s*\||\s*$)/i);
+  if (m) {
+    d.status = m[1].trim();
+    d.status_key = normalizeStatusKey(d.status);
+  }
+  if (!TINH_TRANG_CONFIG[d.status_key]) {
+    if (/\bFB\s*:\s*(?:LIVE|Live)\b/i.test(line)) {
+      d.status_key = 'acc dính fb'; if (!d.status) d.status = 'Acc Dính FB';
+    }
+  }
+  // skin_list
+  for (const pat of [/(?<![S])SS\s*:\s*\d+\s*\[(.*?)\]/i, /SSS\s*:\s*\d+\s*\[(.*?)\]/i, /(?:ANIME|Anime)\s*:\s*\d+\s*\[(.*?)\]/i]) {
+    const mm = line.match(pat); if (mm) d.skin_list += ' ' + mm[1];
+  }
+  // Rank (longest match first)
+  const RANK_NAMES_PARSE = ['chiến thần','chiến tướng','đại cao thủ','cao thủ','tinh anh','kim cương','bạch kim','vàng','bạc','đồng'];
+  for (const r of RANK_NAMES_PARSE) {
+    if (line.toLowerCase().includes(r)) { d.rank = r; break; }
+  }
+  // Stars
+  for (const pat of [/\[(\d+)\s*✮\]/, /(\d+)\s*✮/, /\[(\d+)\s*[Ss]ao\]/, /[Ss]ao\s*:\s*(\d+)/, /(\d+)\s*★/]) {
+    const mm = line.match(pat); if (mm) { d.sao = +mm[1]; break; }
+  }
+  if (d.rank === 'chiến thần' && d.sao < 100) d.rank = '';
+  return d;
+}
+
+function parseDMY(s) {
+  const [d,m,y] = s.split('-');
+  return new Date(+y, +m-1, +d);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FILE INFO SECTION
+// ═══════════════════════════════════════════════════════════
+function updateFileInfoSection(filename, sizeMB, total, unique, dups) {
+  const sec = document.getElementById('file-info-section');
+  const noFileWarn = document.getElementById('no-file-warning');
+  const filterContent = document.getElementById('filter-content');
+
+  if (!rawLines.length) {
+    sec.style.display = 'none';
+    if (noFileWarn) noFileWarn.style.display = '';
+    if (filterContent) filterContent.style.display = 'none';
+    document.getElementById('sb-file-info').textContent = 'Chưa có file';
+    return;
+  }
+
+  sec.style.display = '';
+  if (noFileWarn) noFileWarn.style.display = 'none';
+  if (filterContent) filterContent.style.display = '';
+
+  // Stats
+  const ttCounts = {};
+  for (const key of Object.keys(TINH_TRANG_CONFIG)) ttCounts[key] = 0;
+  let ttOther = 0;
+  for (const p of parsedData) {
+    if (ttCounts[p.status_key] !== undefined) ttCounts[p.status_key]++;
+    else if (p.status_key) ttOther++;
+  }
+
+  const grid = document.getElementById('file-info-grid');
+  grid.innerHTML = `
+    <div class="fi-stat"><div class="fi-val">${rawLines.length.toLocaleString()}</div><div class="fi-label">Tổng Acc</div></div>
+    <div class="fi-stat"><div class="fi-val">${(dups||0).toLocaleString()}</div><div class="fi-label">Trùng Đã Lọc</div></div>
+    <div class="fi-stat"><div class="fi-val">${sizeMB||'?'}</div><div class="fi-label">MB</div></div>
+    <div class="fi-stat"><div class="fi-val">${parsedData.filter(p=>p.sss>0).length.toLocaleString()}</div><div class="fi-label">Có SSS</div></div>
+    <div class="fi-stat"><div class="fi-val">${parsedData.filter(p=>p.anime>0).length.toLocaleString()}</div><div class="fi-label">Có Anime</div></div>
+    <div class="fi-stat"><div class="fi-val">${parsedData.filter(p=>!p.banned).length.toLocaleString()}</div><div class="fi-label">Không Ban</div></div>
+  `;
+
+  // Tình trạng summary
+  const ttEl = document.getElementById('tinh-trang-summary');
+  let ttHtml = '<strong style="color:var(--text)">Phân loại Tình Trạng:</strong><br>';
+  for (const [key, [label, emoji]] of Object.entries(TINH_TRANG_CONFIG)) {
+    if (ttCounts[key] > 0)
+      ttHtml += `<span style="margin-right:12px">${emoji} ${label}: <strong style="color:var(--neon)">${ttCounts[key].toLocaleString()}</strong></span>`;
+  }
+  if (ttOther > 0) ttHtml += `❓ Loại khác: <strong style="color:var(--text)">${ttOther.toLocaleString()}</strong>`;
+  ttEl.innerHTML = ttHtml;
+  ttEl.style.display = '';
+
+  document.getElementById('sb-file-info').textContent = `📄 ${currentFilename} (${rawLines.length.toLocaleString()} acc)`;
+}
+
+function clearFile() {
+  rawLines = []; parsedData = []; currentFilename = '';
+  filteredLines = [];
+  updateFileInfoSection();
+  showToast('🗑️ Đã xóa file!', 'info');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PERMISSION CHECK
+// ═══════════════════════════════════════════════════════════
+async function checkPermission() {
+  if (!currentUser) { showToast('❌ Chưa đăng nhập!', 'error'); return false; }
+  if (currentUser.isAdmin) return true;
+
+  // Check active key
+  const kd = await getKeyData(currentUser.username);
+  const rem = getRemainingSeconds(kd);
+  if (rem > 0) return true;
+
+  // Check free
+  const today = new Date().toISOString().slice(0,10);
+  const freeUsed = (kd.free_date === today) ? (kd.free_used || 0) : 0;
+  if (freeUsed < FREE_DAILY_LIMIT) {
+    kd.free_used = freeUsed + 1;
+    kd.free_date = today;
+    await dbPut('keys', kd);
+    if (kd.free_used >= FREE_DAILY_LIMIT) {
+      showToast('🆓 Đã dùng hết lượt free hôm nay! Hãy mua key để tiếp tục.', 'warn');
+    }
+    return true;
+  }
+
+  showToast('🚫 Hết lượt free hôm nay! Hãy mua key tại @motconboo', 'error');
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KEY SYSTEM
+// ═══════════════════════════════════════════════════════════
+async function getKeyData(uid) {
+  let kd = await dbGet('keys', uid);
+  if (!kd) {
+    kd = {
+      uid, inventory: {đồng:0, bạc:0, vàng:0},
+      remaining_seconds: 0, last_save_time: new Date().toISOString(),
+      is_activated: false, free_used: 0, free_date: '',
+    };
+    await dbPut('keys', kd);
+  }
+  return kd;
+}
+
+function getRemainingSeconds(kd) {
+  if (!kd || !kd.is_activated) return 0;
+  let rem = kd.remaining_seconds || 0;
+  if (rem <= 0) return 0;
+  if (kd.last_save_time) {
+    const elapsed = (Date.now() - new Date(kd.last_save_time).getTime()) / 1000;
+    rem = Math.max(0, rem - elapsed);
+  }
+  return rem;
+}
+
+function formatDuration(secs) {
+  secs = Math.floor(secs);
+  if (secs <= 0) return '0 giây';
+  const d = Math.floor(secs / 86400);
+  const h = Math.floor((secs % 86400) / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  const parts = [];
+  if (d) parts.push(d + ' ngày');
+  if (h) parts.push(h + ' giờ');
+  if (m) parts.push(m + ' phút');
+  if (s && !d) parts.push(s + ' giây');
+  return parts.join(' ');
+}
+
+async function updateKeyStatus() {
+  if (!currentUser) return;
+  const kd = await getKeyData(currentUser.username);
+  const rem = getRemainingSeconds(kd);
+  const today = new Date().toISOString().slice(0,10);
+  const freeUsed = (kd.free_date === today) ? (kd.free_used||0) : 0;
+  const freeLeft = Math.max(0, FREE_DAILY_LIMIT - freeUsed);
+
+  // Sidebar status
+  const sbStatus = document.getElementById('sb-status');
+  if (rem > 0) {
+    sbStatus.textContent = '🔑 ' + formatDuration(rem);
+    sbStatus.className = 'user-status has-key';
+  } else if (freeLeft > 0) {
+    sbStatus.textContent = `🆓 ${freeLeft} lượt free`;
+    sbStatus.className = 'user-status';
+  } else {
+    sbStatus.textContent = '🚫 Hết lượt';
+    sbStatus.className = 'user-status';
+  }
+
+  // Key page
+  const statusIcon = document.getElementById('key-status-icon');
+  const statusText = document.getElementById('key-status-text');
+  const statusSub = document.getElementById('key-status-sub');
+  if (statusIcon) {
+    if (rem > 0) {
+      statusIcon.textContent = '✅';
+      statusText.textContent = 'Key đang chạy';
+      statusSub.textContent = 'Còn: ' + formatDuration(rem);
+    } else {
+      statusIcon.textContent = '❌';
+      statusText.textContent = 'Chưa có key';
+      statusSub.textContent = `Lượt free: ${freeLeft}/${FREE_DAILY_LIMIT} hôm nay`;
+    }
+  }
+
+  // Inventory
+  const inv = kd.inventory || {};
+  const dEl = document.getElementById('inv-dong');
+  const bEl = document.getElementById('inv-bac');
+  const vEl = document.getElementById('inv-vang');
+  if (dEl) dEl.textContent = inv['đồng'] || 0;
+  if (bEl) bEl.textContent = inv['bạc'] || 0;
+  if (vEl) vEl.textContent = inv['vàng'] || 0;
+
+  // Key history
+  const h = await dbGet('history', currentUser.username) || {};
+  const hist = document.getElementById('key-history-list');
+  if (hist) {
+    const keyHist = (h.key_history || []).slice(-20).reverse();
+    if (!keyHist.length) {
+      hist.innerHTML = '<p style="color:var(--text3);text-align:center;padding:16px">Chưa có lịch sử</p>';
+    } else {
+      hist.innerHTML = keyHist.map(k => {
+        const icons = {'activated':'⚡','received':'🎁','sent':'📤','added_by_admin':'👑'};
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:16px">${icons[k.action]||'🔑'}</span>
+          <span style="color:var(--text2);font-size:11px;font-family:var(--font-mono)">${k.time.slice(0,19).replace('T',' ')}</span>
+          <span style="flex:1">${k.action} ${k.key_type} × ${k.qty}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function updateKeyCountdown() {
+  if (!currentUser) return;
+  // Update sidebar status every second
+  const sbStatus = document.getElementById('sb-status');
+  if (!sbStatus) return;
+  if (sbStatus.textContent.startsWith('🔑')) {
+    // Decrease by 1 second
+    getKeyData(currentUser.username).then(kd => {
+      const rem = getRemainingSeconds(kd);
+      if (rem > 0) sbStatus.textContent = '🔑 ' + formatDuration(rem);
+      else { sbStatus.textContent = '🆓 1 lượt free'; sbStatus.className = 'user-status'; }
+    });
+  }
+}
+
+async function activateKey(type) {
+  if (!currentUser) return;
+  const kd = await getKeyData(currentUser.username);
+  const inv = kd.inventory || {};
+  if (!inv[type] || inv[type] <= 0) {
+    showToast(`❌ Kho không có key ${type}!`, 'error'); return;
+  }
+  // Flush remaining
+  const curRem = getRemainingSeconds(kd);
+  inv[type]--;
+  kd.remaining_seconds = curRem + KEY_HOURS[type] * 3600;
+  kd.last_save_time = new Date().toISOString();
+  kd.is_activated = true;
+  kd.inventory = inv;
+  await dbPut('keys', kd);
+
+  // Log
+  await logKeyHistory(currentUser.username, 'activated', type, 1);
+  showToast(`✅ Kích hoạt key ${type} thành công! +${formatDuration(KEY_HOURS[type]*3600)}`, 'success');
+  updateKeyStatus();
+  addLog(currentUser.username, currentUser.fullname, `Kích hoạt key ${type}`, 'KEY');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FILTER PAGE
+// ═══════════════════════════════════════════════════════════
+function renderFilterPage() {
+  const noWarn = document.getElementById('no-file-warning');
+  const content = document.getElementById('filter-content');
+  if (!rawLines.length) {
+    noWarn.style.display = ''; content.style.display = 'none'; return;
+  }
+  noWarn.style.display = 'none'; content.style.display = '';
+
+  const filters = [
+    {id:'skin', icon:'🎨', text:'Cắt theo khoảng Skin', count: rawLines.length},
+    {id:'tenskin', icon:'🔤', text:'Cắt theo tên Skin'},
+    {id:'sss', icon:'💎', text:'Cắt acc có SSS', count: parsedData.filter(p=>p.sss>0).length},
+    {id:'anime', icon:'🌸', text:'Cắt acc có Anime', count: parsedData.filter(p=>p.anime>0).length},
+    {id:'ss', icon:'⭐', text:'Cắt acc có SS', count: parsedData.filter(p=>p.ss>0).length},
+    {id:'ban', icon:'🚫', text:'Cắt acc theo Ban', count: parsedData.filter(p=>!p.banned).length},
+    {id:'so', icon:'🐚', text:'Cắt theo Sò'},
+    {id:'quanhuy', icon:'🏅', text:'Cắt theo Quân Huy'},
+    {id:'tinhtrang', icon:'📋', text:'Cắt theo Tình Trạng', count: parsedData.filter(p=>p.status_key).length},
+    {id:'rank', icon:'🏆', text:'Cắt theo Rank'},
+  ];
+
+  const grid = document.getElementById('filter-grid');
+  grid.innerHTML = filters.map(f => `
+    <div class="filter-btn" id="fb-${f.id}" onclick="toggleFilter('${f.id}')">
+      <span class="fb-icon">${f.icon}</span>
+      <span class="fb-text">${f.text}</span>
+      ${f.count !== undefined ? `<span class="fb-count">${f.count.toLocaleString()}</span>` : ''}
+    </div>
+  `).join('');
+
+  // Render tình trạng chips
+  const ttChips = document.getElementById('tt-chips');
+  ttChips.innerHTML = Object.entries(TINH_TRANG_CONFIG).map(([key, [label, emoji]]) => {
+    const cnt = parsedData.filter(p=>p.status_key===key).length;
+    return `<div class="chip" data-tt="${key}" onclick="selectTT(this)">${emoji} ${label} (${cnt.toLocaleString()})</div>`;
+  }).join('');
+}
+
+let activePanel = null;
+function toggleFilter(id) {
+  // Close all panels
+  document.querySelectorAll('.filter-panel').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('result-section').style.display = 'none';
+
+  if (activePanel === id) { activePanel = null; return; }
+  activePanel = id;
+
+  const panel = document.getElementById('panel-' + id);
+  const btn   = document.getElementById('fb-' + id);
+  if (panel) { panel.classList.add('open'); }
+  if (btn)   { btn.classList.add('active'); }
+
+  // Auto-apply for simple filters (sss, anime, ss)
+  if (['sss','anime','ss'].includes(id)) applyFilter(id);
+}
+
+function selectBan(el) {
+  document.querySelectorAll('[data-ban]').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectTT(el) {
+  el.classList.toggle('active');
+}
+
+function applyFilter(type) {
+  let result = [];
+  let name = '';
+
+  switch(type) {
+    case 'sss':
+      result = rawLines.filter((_,i) => parsedData[i]?.sss > 0);
+      name = '💎 Có SSS'; break;
+    case 'anime':
+      result = rawLines.filter((_,i) => parsedData[i]?.anime > 0);
+      name = '🌸 Có Anime'; break;
+    case 'ss':
+      result = rawLines.filter((_,i) => parsedData[i]?.ss > 0);
+      name = '⭐ Có SS'; break;
+    case 'skin': {
+      const sMin = +document.getElementById('skin-min').value || 0;
+      const sMax = +document.getElementById('skin-max').value || Infinity;
+      const sPlus = document.getElementById('skin-plus').value;
+      if (sPlus) {
+        result = rawLines.filter((_,i) => parsedData[i]?.skin >= +sPlus);
+        name = `🎨 Skin ${sPlus}+`;
+      } else if (sMin || sMax < Infinity) {
+        result = rawLines.filter((_,i) => {
+          const s = parsedData[i]?.skin || 0;
+          return s >= sMin && s <= sMax;
+        });
+        name = `🎨 Skin ${sMin}-${sMax}`;
+      } else { showToast('⚠️ Nhập khoảng skin!', 'warn'); return; }
+      break;
+    }
+    case 'tenskin': {
+      const q = document.getElementById('tenskin-input').value.trim().toLowerCase();
+      if (!q) { showToast('⚠️ Nhập tên skin!', 'warn'); return; }
+      result = rawLines.filter((_,i) => (parsedData[i]?.skin_list || '').toLowerCase().includes(q) || rawLines[i].toLowerCase().includes(q));
+      name = `🔤 Tên Skin "${q}"`;
+      break;
+    }
+    case 'so': {
+      const sMin = +document.getElementById('so-min').value || 0;
+      const sMax = document.getElementById('so-max').value ? +document.getElementById('so-max').value : Infinity;
+      result = rawLines.filter((_,i) => {
+        const s = parsedData[i]?.so || 0;
+        return s >= sMin && s <= sMax;
+      });
+      name = `🐚 Sò ${sMin}${sMax<Infinity?'-'+sMax:'+'}`;
+      break;
+    }
+    case 'quanhuy': {
+      const qMin = +document.getElementById('qh-min').value || 0;
+      const qMax = document.getElementById('qh-max').value ? +document.getElementById('qh-max').value : Infinity;
+      result = rawLines.filter((_,i) => {
+        const q = parsedData[i]?.quan_huy || 0;
+        return q >= qMin && q <= qMax;
+      });
+      name = `🏅 Quân Huy ${qMin}${qMax<Infinity?'-'+qMax:'+'}`;
+      break;
+    }
+    case 'ban': {
+      const banType = document.querySelector('[data-ban].active')?.dataset.ban || 'none';
+      result = rawLines.filter((_,i) => parsedData[i]?.ban_type === banType);
+      const banNames = {none:'Không ban', ngay:'Ban ngày', thang:'Ban tháng', nam:'Ban năm'};
+      name = `🚫 ${banNames[banType] || banType}`;
+      break;
+    }
+    case 'tinhtrang': {
+      const selected = [...document.querySelectorAll('[data-tt].active')].map(e => e.dataset.tt);
+      if (!selected.length) { showToast('⚠️ Chọn ít nhất 1 tình trạng!', 'warn'); return; }
+      result = rawLines.filter((_,i) => selected.includes(parsedData[i]?.status_key));
+      name = `📋 ${selected.map(k => TINH_TRANG_CONFIG[k]?.[0] || k).join(', ')}`;
+      break;
+    }
+    case 'rank': {
+      const rank = document.getElementById('rank-select').value;
+      if (!rank) { showToast('⚠️ Chọn rank!', 'warn'); return; }
+      const starMin = document.getElementById('rank-star-min').value ? +document.getElementById('rank-star-min').value : 0;
+      const starMax = document.getElementById('rank-star-max').value ? +document.getElementById('rank-star-max').value : 99999;
+      result = rawLines.filter((_,i) => {
+        const p = parsedData[i];
+        return p?.rank === rank && p?.sao >= starMin && p?.sao <= starMax;
+      });
+      name = `${RANK_EMOJI[rank]||'🏆'} ${rank} ${starMin}-${starMax === 99999 ? '∞' : starMax}⭐`;
+      break;
+    }
+    default:
+      result = [...rawLines]; name = 'Tất cả';
+  }
+
+  filteredLines = result;
+  currentFilterName = name;
+  showResult(name, result.length);
+}
+
+function showResult(name, count) {
+  const sec = document.getElementById('result-section');
+  sec.style.display = '';
+  document.getElementById('result-title').textContent = name;
+  document.getElementById('result-desc').textContent = `Tìm thấy: ${count.toLocaleString()} acc`;
+}
+
+function closeResult() {
+  filteredLines = [];
+  document.getElementById('result-section').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DOWNLOAD / CẮT FILE
+// ═══════════════════════════════════════════════════════════
+async function quickCut(type) {
+  if (!rawLines.length) { showToast('❌ Chưa có file!', 'error'); return; }
+  const canUse = await checkPermission();
+  if (!canUse) return;
+  filteredLines = [...rawLines];
+  currentFilterName = 'Cắt Thường';
+  await downloadFiltered();
+}
+
+async function downloadFiltered() {
+  if (!filteredLines.length) { showToast('❌ Không có acc nào!', 'error'); return; }
+  const canUse = await checkPermission();
+  if (!canUse) return;
+
+  const accPerFile = +document.getElementById('acc-per-file')?.value || 200;
+  const customName = document.getElementById('custom-filename')?.value?.trim() || currentFilename || 'acc_lqm';
+  const numFiles = Math.ceil(filteredLines.length / accPerFile);
+
+  if (numFiles > 50) {
+    if (!confirm(`⚠️ Sẽ tải ${numFiles} file. Tiếp tục?`)) return;
+  }
+
+  // Show progress
+  const dlSec = document.getElementById('dl-progress-filters');
+  if (dlSec) dlSec.classList.add('active');
+
+  stopRequested = false;
+  isCutting = true;
+  let totalBytes = 0;
+
+  for (let i = 0; i < numFiles; i++) {
+    if (stopRequested) break;
+    const part = filteredLines.slice(i * accPerFile, (i+1) * accPerFile);
+    const content = part.join('\n');
+    totalBytes += content.length;
+
+    const fname = numFiles > 1 ? `${customName}_${i+1}.txt` : `${customName}.txt`;
+    downloadTxt(content, fname);
+
+    const pct = Math.round((i+1) / numFiles * 100);
+    const fillEl = document.getElementById('dl-fill2');
+    const infoEl = document.getElementById('dl-info2');
+    const pctEl  = document.getElementById('dl-pct2');
+    if (fillEl) fillEl.style.width = pct + '%';
+    if (infoEl) infoEl.textContent = `${i+1} / ${numFiles} file`;
+    if (pctEl)  pctEl.textContent  = pct + '%';
+
+    await new Promise(r => setTimeout(r, 80)); // Small delay between files
+  }
+
+  isCutting = false;
+  if (dlSec) setTimeout(() => dlSec.classList.remove('active'), 2000);
+
+  const sizeMB = (totalBytes / 1048576).toFixed(2);
+  await logDownload(currentUser.username, currentFilterName, numFiles, filteredLines.length, +sizeMB);
+  showToast(`✅ Đã tải ${numFiles} file (${filteredLines.length.toLocaleString()} acc)!`, 'success');
+  addLog(currentUser.username, currentUser.fullname,
+    `Down: ${currentFilterName} → ${numFiles}file ${filteredLines.length.toLocaleString()}acc`, 'FILE');
+}
+
+function downloadTxt(content, filename) {
+  const blob = new Blob([content], {type:'text/plain;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function stopCut() { stopRequested = true; showToast('⏹ Đang dừng...', 'warn'); }
+
+// ═══════════════════════════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════════════════════════
+async function logUpload(uid, filename, sizeMB, accCount) {
+  let h = await dbGet('history', uid) || { uid };
+  if (!h.uploads) h.uploads = [];
+  h.uploads.push({ time: new Date().toISOString(), filename, size_mb: sizeMB, acc_count: accCount });
+  h.uploads = h.uploads.slice(-30);
+  h.total_upload_mb = +(( h.total_upload_mb || 0) + sizeMB).toFixed(2);
+  await dbPut('history', h);
+}
+async function logDownload(uid, filterName, filesCount, accCount, sizeMB) {
+  let h = await dbGet('history', uid) || { uid };
+  if (!h.downloads) h.downloads = [];
+  h.downloads.push({ time: new Date().toISOString(), filter: filterName, files: filesCount, acc_count: accCount, size_mb: sizeMB });
+  h.downloads = h.downloads.slice(-30);
+  h.total_download_mb = +((h.total_download_mb || 0) + sizeMB).toFixed(2);
+  h.total_acc_cut = (h.total_acc_cut || 0) + accCount;
+  await dbPut('history', h);
+}
+async function logKeyHistory(uid, action, keyType, qty) {
+  let h = await dbGet('history', uid) || { uid };
+  if (!h.key_history) h.key_history = [];
+  h.key_history.push({ time: new Date().toISOString(), action, key_type: keyType, qty });
+  h.key_history = h.key_history.slice(-50);
+  await dbPut('history', h);
+}
+
+async function renderHistory() {
+  if (!currentUser) return;
+  const h = await dbGet('history', currentUser.username) || {};
+
+  const uploads = (h.uploads || []).slice(-20).reverse();
+  const ub = document.getElementById('history-upload-body');
+  ub.innerHTML = uploads.length ? uploads.map(u => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:12px;color:var(--text2)">${u.time.slice(0,19).replace('T',' ')}</td>
+      <td><strong>${u.filename}</strong></td>
+      <td style="font-family:var(--font-mono)">${u.acc_count.toLocaleString()}</td>
+      <td style="font-family:var(--font-mono)">${u.size_mb} MB</td>
+    </tr>`).join('') :
+    '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">Chưa có lịch sử</td></tr>';
+
+  const downloads = (h.downloads || []).slice(-20).reverse();
+  const db2 = document.getElementById('history-download-body');
+  db2.innerHTML = downloads.length ? downloads.map(d => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:12px;color:var(--text2)">${d.time.slice(0,19).replace('T',' ')}</td>
+      <td>${d.filter}</td>
+      <td style="font-family:var(--font-mono)">${d.files}</td>
+      <td style="font-family:var(--font-mono)">${d.acc_count.toLocaleString()}</td>
+      <td style="font-family:var(--font-mono)">${d.size_mb}</td>
+    </tr>`).join('') :
+    '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Chưa có lịch sử</td></tr>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATUS BAR
+// ═══════════════════════════════════════════════════════════
+async function updateStatusBar() {
+  const allUsers = await dbGetAll('users');
+  const allKeys  = await dbGetAll('keys');
+  let keyCount = 0;
+  for (const kd of allKeys) {
+    if (getRemainingSeconds(kd) > 0) keyCount++;
+  }
+  document.getElementById('sb-users-count').textContent = allUsers.length + ' users';
+  document.getElementById('sb-key-count').textContent = keyCount + ' có key';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ADMIN DASHBOARD
+// ═══════════════════════════════════════════════════════════
+async function renderAdminDashboard() {
+  const allUsers   = await dbGetAll('users');
+  const allKeys    = await dbGetAll('keys');
+  const allHistory = await dbGetAll('history');
+  const today      = new Date().toISOString().slice(0,10);
+
+  let activeKey = 0, freeLeft = 0, noAccess = 0, totalAccCut = 0;
+  for (const u of allUsers) {
+    const kd = allKeys.find(k => k.uid === u.username) || {};
+    const rem = getRemainingSeconds(kd);
+    const freeUsed = kd.free_date === today ? (kd.free_used||0) : 0;
+    if (rem > 0) activeKey++;
+    else if (freeUsed < FREE_DAILY_LIMIT) freeLeft++;
+    else noAccess++;
+  }
+  for (const h of allHistory) totalAccCut += h.total_acc_cut || 0;
+
+  const logs = await dbGetAll('logs');
+  const todayLogs = logs.filter(l => l.time?.startsWith?.(today));
+
+  document.getElementById('admin-stats-grid').innerHTML = `
+    <div class="stat-card blue"><div class="stat-val">${allUsers.length}</div><div class="stat-label">👥 Tổng Users</div></div>
+    <div class="stat-card gold"><div class="stat-val">${activeKey}</div><div class="stat-label">🔑 Đang có key</div></div>
+    <div class="stat-card green"><div class="stat-val">${freeLeft}</div><div class="stat-label">🆓 Còn free</div></div>
+    <div class="stat-card red"><div class="stat-val">${noAccess}</div><div class="stat-label">🚫 Hết lượt</div></div>
+    <div class="stat-card purple"><div class="stat-val">${totalAccCut.toLocaleString()}</div><div class="stat-label">✂️ Tổng acc cắt</div></div>
+    <div class="stat-card blue"><div class="stat-val">${todayLogs.length}</div><div class="stat-label">📋 Log hôm nay</div></div>
+  `;
+
+  // Recent activity
+  const recentLogs = logs.sort((a,b) => new Date(b.time)-new Date(a.time)).slice(0,8);
+  const actEl = document.getElementById('admin-recent-activity');
+  if (recentLogs.length) {
+    actEl.innerHTML = recentLogs.map(l => `
+      <div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);align-items:center">
+        <span style="font-size:11px;color:var(--text3);font-family:var(--font-mono);flex-shrink:0">${(l.time||'').slice(11,19)}</span>
+        <span style="color:var(--text2);font-size:12px">${l.user||'?'}</span>
+        <span style="font-size:12px;flex:1;color:var(--text)">${l.msg||''}</span>
+      </div>`).join('');
+  }
+
+  // Today stats
+  let todayUploads = 0, todayDownloads = 0, todayAcc = 0;
+  for (const h of allHistory) {
+    todayUploads += (h.uploads||[]).filter(u=>u.time?.startsWith(today)).length;
+    const dl = (h.downloads||[]).filter(d=>d.time?.startsWith(today));
+    todayDownloads += dl.length;
+    todayAcc += dl.reduce((s,d)=>s+(d.acc_count||0),0);
+  }
+  document.getElementById('admin-today-stats').innerHTML = `
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between">
+      <span>📤 Uploads</span><strong style="color:var(--neon)">${todayUploads}</strong>
+    </div>
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between">
+      <span>⬇️ Downloads</span><strong style="color:var(--green)">${todayDownloads}</strong>
+    </div>
+    <div style="padding:10px 0;display:flex;justify-content:space-between">
+      <span>✂️ Acc cắt hôm nay</span><strong style="color:var(--gold)">${todayAcc.toLocaleString()}</strong>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ADMIN USERS
+// ═══════════════════════════════════════════════════════════
+let usersPage = 0;
+let usersFilter = 'all';
+let usersSearch = '';
+
+async function renderAdminUsers() {
+  const tbody = document.getElementById('users-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:24px">⏳ Đang tải...</td></tr>';
+
+  try {
+    const allUsers   = await dbGetAll('users');
+    const allKeys    = await dbGetAll('keys');
+    const allHistory = await dbGetAll('history');
+    const today      = new Date().toISOString().slice(0,10);
+
+    // Wire search once
+    const searchEl = document.getElementById('user-search');
+    if (searchEl && !searchEl._wired) {
+      searchEl._wired = true;
+      searchEl.addEventListener('input', debounce(async e => {
+        usersSearch = e.target.value.toLowerCase();
+        usersPage = 0;
+        await renderAdminUsers();
+      }, 350));
+    }
+
+    _drawUsersTable(tbody, allUsers, allKeys, allHistory, today);
+  } catch(err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--red);padding:24px">❌ Lỗi: ${err.message}</td></tr>`;
+  }
+}
+
+function _drawUsersTable(tbody, allUsers, allKeys, allHistory, today) {
+  let users = [...allUsers];
+
+  // Search
+  if (usersSearch) {
+    users = users.filter(u =>
+      u.username.toLowerCase().includes(usersSearch) ||
+      (u.fullname||'').toLowerCase().includes(usersSearch));
+  }
+
+  // Filter tab
+  if (usersFilter !== 'all') {
+    users = users.filter(u => {
+      const kd = allKeys.find(k => k.uid === u.username) || {};
+      const rem = getRemainingSeconds(kd);
+      const freeUsed = (kd.free_date === today) ? (kd.free_used||0) : 0;
+      if (usersFilter === 'key')   return rem > 0;
+      if (usersFilter === 'free')  return rem <= 0 && freeUsed < FREE_DAILY_LIMIT;
+      if (usersFilter === 'nokey') return rem <= 0 && freeUsed >= FREE_DAILY_LIMIT;
+      return true;
+    });
+  }
+
+  // Pagination
+  const pageSize   = 10;
+  const totalPages = Math.ceil(users.length / pageSize) || 1;
+  usersPage = Math.min(usersPage, totalPages - 1);
+  const slice = users.slice(usersPage * pageSize, (usersPage+1) * pageSize);
+
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:24px">Không có user nào phù hợp</td></tr>';
+  } else {
+    tbody.innerHTML = slice.map(u => {
+      const kd = allKeys.find(k => k.uid === u.username) || {};
+      const rem = getRemainingSeconds(kd);
+      const inv = kd.inventory || {};
+      const freeUsed = (kd.free_date === today) ? (kd.free_used||0) : 0;
+      const h = allHistory.find(x => x.uid === u.username) || {};
+      const todayAcc = (h.downloads||[])
+        .filter(d => (d.time||'').startsWith(today))
+        .reduce((s,d) => s + (d.acc_count||0), 0);
+
+      const statusBadge = rem > 0
+        ? `<span class="badge badge-green">🔑 ${formatDuration(rem)}</span>`
+        : freeUsed < FREE_DAILY_LIMIT
+          ? `<span class="badge badge-blue">🆓 Free</span>`
+          : `<span class="badge badge-red">🚫 Hết</span>`;
+
+      return `<tr>
+        <td>
+          <div style="font-weight:700;color:var(--text)">${u.fullname || u.username}</div>
+          <div style="font-size:11px;color:var(--text2);font-family:var(--font-mono)">@${u.username}${u.isAdmin?' 👑':''}</div>
+        </td>
+        <td>${statusBadge}</td>
+        <td style="font-size:12px;font-family:var(--font-mono);white-space:nowrap">
+          🟤${inv['đồng']||0} ⚪${inv['bạc']||0} 🟡${inv['vàng']||0}
+        </td>
+        <td style="font-family:var(--font-mono)">${todayAcc.toLocaleString()}</td>
+        <td style="font-size:11px;color:var(--text2)">${(u.lastActive||'').slice(0,10)||'?'}</td>
+        <td>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-neon btn-sm" onclick="openUserDetail('${u.username}')">🔍</button>
+            <button class="btn btn-green btn-sm" onclick="quickAddKey('${u.username}')">➕</button>
+            <button class="btn btn-outline btn-sm" onclick="quickResetFree('${u.username}')">🔄</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Pagination
+  const pag = document.getElementById('users-pagination');
+  if (!pag) return;
+  pag.innerHTML = '';
+  if (totalPages > 1) {
+    if (usersPage > 0) {
+      const b = document.createElement('div');
+      b.className = 'page-btn'; b.textContent = '◀';
+      b.onclick = () => { usersPage--; renderAdminUsers(); };
+      pag.appendChild(b);
+    }
+    for (let i = 0; i < totalPages; i++) {
+      const b = document.createElement('div');
+      b.className = 'page-btn' + (i === usersPage ? ' active' : '');
+      b.textContent = i+1;
+      b.onclick = () => { usersPage = i; renderAdminUsers(); };
+      pag.appendChild(b);
+    }
+    if (usersPage < totalPages - 1) {
+      const b = document.createElement('div');
+      b.className = 'page-btn'; b.textContent = '▶';
+      b.onclick = () => { usersPage++; renderAdminUsers(); };
+      pag.appendChild(b);
+    }
+  }
+}
+
+function filterUsers(el) {
+  document.querySelectorAll('[data-filter]').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  usersFilter = el.dataset.filter;
+  usersPage   = 0;
+  renderAdminUsers();
+}
+
+async function openUserDetail(username) {
+  const u = await dbGet('users', username);
+  const kd = await dbGet('keys', username) || {};
+  const h  = await dbGet('history', username) || {};
+  const today = new Date().toISOString().slice(0,10);
+  const rem = getRemainingSeconds(kd);
+  const inv = kd.inventory || {};
+  const freeUsed = kd.free_date === today ? (kd.free_used||0) : 0;
+  const todayAcc = (h.downloads||[]).filter(d=>d.time?.startsWith(today)).reduce((s,d)=>s+(d.acc_count||0),0);
+  const todayFiles = (h.downloads||[]).filter(d=>d.time?.startsWith(today)).length;
+
+  document.getElementById('modal-ud-title').textContent = `🔍 ${u?.fullname || username}`;
+  document.getElementById('modal-ud-body').innerHTML = `
+    <div style="display:grid;gap:12px;font-size:14px">
+      <div style="background:var(--bg2);border-radius:8px;padding:14px">
+        <div><strong>👤 Tên:</strong> ${u?.fullname || 'Ẩn danh'}</div>
+        <div style="margin-top:4px"><strong>🆔 Username:</strong> <code style="font-family:var(--font-mono)">@${username}</code></div>
+        <div style="margin-top:4px"><strong>📅 Tạo lúc:</strong> ${u?.createdAt?.slice(0,19).replace('T',' ')||'?'}</div>
+        <div style="margin-top:4px"><strong>🕐 Active cuối:</strong> ${u?.lastActive?.slice(0,19).replace('T',' ')||'?'}</div>
+        <div style="margin-top:4px"><strong>⚡ Tổng thao tác:</strong> ${u?.totalActions||0}</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:14px">
+        <div><strong>🔑 Key:</strong> ${rem > 0 ? `<span style="color:var(--green)">✅ Còn ${formatDuration(rem)}</span>` : '<span style="color:var(--red)">❌ Không có</span>'}</div>
+        <div style="margin-top:4px"><strong>📦 Kho:</strong> 🟤${inv['đồng']||0} ⚪${inv['bạc']||0} 🟡${inv['vàng']||0}</div>
+        <div style="margin-top:4px"><strong>🆓 Free:</strong> ${freeUsed}/${FREE_DAILY_LIMIT} hôm nay</div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:14px">
+        <div><strong>📊 Tổng thống kê:</strong></div>
+        <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px">
+          <div>⬆️ Upload: ${(h.total_upload_mb||0).toFixed(1)} MB</div>
+          <div>⬇️ Download: ${(h.total_download_mb||0).toFixed(1)} MB</div>
+          <div>✂️ Acc cắt: ${(h.total_acc_cut||0).toLocaleString()}</div>
+          <div>📅 Hôm nay: ${todayFiles} file / ${todayAcc.toLocaleString()} acc</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="quickAddKey('${username}');closeModal('modal-user-detail')">➕ Cộng key</button>
+        <button class="btn btn-red btn-sm" onclick="adminRemoveKeyFor('${username}')">🗑️ Xóa key</button>
+        <button class="btn btn-outline btn-sm" onclick="quickResetFree('${username}')">🔄 Reset free</button>
+      </div>
+    </div>`;
+  openModal('modal-user-detail');
+}
+
+let rfTargetUid = null;
+function quickResetFree(username) {
+  rfTargetUid = username;
+  document.getElementById('modal-rf-text').textContent = `Reset lượt free cho @${username}?`;
+  openModal('modal-reset-free');
+}
+async function confirmResetFree() {
+  if (!rfTargetUid) return;
+  const kd = await getKeyData(rfTargetUid);
+  kd.free_used = 0; kd.free_date = '';
+  await dbPut('keys', kd);
+  showToast(`✅ Đã reset free cho @${rfTargetUid}`, 'success');
+  addLog(currentUser.username, currentUser.fullname, `Reset free: @${rfTargetUid}`, 'KEY');
+  closeModal('modal-reset-free');
+  renderAdminUsers();
+}
+
+function quickAddKey(username) {
+  document.getElementById('addkey-target').value = username;
+  showPage('admin-keys');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ADMIN KEYS
+// ═══════════════════════════════════════════════════════════
+async function adminAddKey() {
+  const target = document.getElementById('addkey-target').value.trim().replace('@','');
+  const keyType = document.getElementById('addkey-type').value;
+  const qty = +document.getElementById('addkey-qty').value || 1;
+
+  if (!target) { showToast('⚠️ Nhập username!', 'warn'); return; }
+
+  const u = await dbGet('users', target);
+  if (!u) { showToast(`❌ Không tìm thấy user @${target}!`, 'error'); return; }
+
+  const kd = await getKeyData(target);
+  kd.inventory[keyType] = (kd.inventory[keyType] || 0) + qty;
+  await dbPut('keys', kd);
+
+  await logKeyHistory(target, 'added_by_admin', keyType, qty);
+  showToast(`✅ Đã cộng ${qty}x key ${keyType} cho @${target}`, 'success');
+  addLog(currentUser.username, currentUser.fullname, `Addkey: @${target} +${qty}x${keyType}`, 'KEY');
+  renderAdminKeys();
+
+  // Notify via broadcast history (virtual notification)
+  const bcastMsg = `🎉 Admin vừa thêm key!\n${qty}x Key ${keyType} cho @${target}`;
+  await addBroadcast(bcastMsg, target);
+}
+
+async function adminRemoveKey() {
+  const target = document.getElementById('rmkey-target').value.trim().replace('@','');
+  if (!target) { showToast('⚠️ Nhập username!', 'warn'); return; }
+  await adminRemoveKeyFor(target);
+}
+
+async function adminRemoveKeyFor(username) {
+  const kd = await getKeyData(username);
+  kd.remaining_seconds = 0; kd.is_activated = false;
+  kd.inventory = {đồng:0, bạc:0, vàng:0};
+  await dbPut('keys', kd);
+  showToast(`✅ Đã xóa key của @${username}`, 'success');
+  addLog(currentUser.username, currentUser.fullname, `Removekey: @${username}`, 'KEY');
+  renderAdminKeys();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KEY CODE SYSTEM — SELF-VALIDATING (HMAC-SHA256)
+//  Code format: LQM-TYPE-RRRR-RRRR-CCCC
+//  C = 4-char checksum from SHA256(SECRET:TYPE:RRRRRRRR)
+//  Works cross-device — no shared DB needed
+// ═══════════════════════════════════════════════════════════
+const KEY_PREFIXES = {'đồng':'DONG','bạc':'BAC','vàng':'VANG'};
+const KEY_PREFIX_REVERSE = {'DONG':'đồng','BAC':'bạc','VANG':'vàng'};
+let _lastGeneratedCodes = [];
+let _codeFilter = 'all';
+
+// ── Admin secret key (change this to your own secret!) ──────
+const CODE_SECRET_KEY = 'LQM_KHOIDZ_SECRET_2025';
+
+// ═══════════════════════════════════════════════════════════
+//  300 CODE ẨN SẴN — CHỈ ADMIN THẤY (hard-coded, hợp lệ)
+// ═══════════════════════════════════════════════════════════
+const PRESET_CODES = {"đồng":["LQM-DONG-S93B-EJM9-J3T8","LQM-DONG-YRXR-T4KG-JR44","LQM-DONG-WE68-MUKT-TMJJ","LQM-DONG-DKVL-LPD8-6H6E","LQM-DONG-Y8M8-9UPG-CL4Y","LQM-DONG-6TPN-2XAB-LXAY","LQM-DONG-X6TQ-3FE5-RRTA","LQM-DONG-KYY4-V3FB-AEJ9","LQM-DONG-WJBX-B2NV-LCEK","LQM-DONG-D34N-UT64-JWW7","LQM-DONG-W78X-5SBF-5D6X","LQM-DONG-HJ4Y-FA4W-AZ6M","LQM-DONG-DQ6A-F4SG-WXM3","LQM-DONG-EYTC-74YA-PPLM","LQM-DONG-9MXP-KFC5-HHNR","LQM-DONG-NAXY-QYFZ-JYXW","LQM-DONG-TPEC-B8TY-FL9A","LQM-DONG-JUHQ-EBJJ-NA8U","LQM-DONG-4C6X-82W4-AUB7","LQM-DONG-AE2C-SPPX-8SVZ","LQM-DONG-C8A2-HFAD-RV69","LQM-DONG-K8BE-KCWZ-SKQM","LQM-DONG-JZWB-LL9S-NWN5","LQM-DONG-YDE7-H24B-UUWQ","LQM-DONG-WAL3-XJCF-7XT9","LQM-DONG-GF8K-ZT96-FG34","LQM-DONG-BMRV-C9NF-YTPL","LQM-DONG-A9L7-CDLU-VTNX","LQM-DONG-6Z8N-7GU8-L4BA","LQM-DONG-4M2T-DYFH-YVGW","LQM-DONG-S524-S437-24GJ","LQM-DONG-QGFG-JFHS-VER8","LQM-DONG-4YQM-PTY8-2KAZ","LQM-DONG-GYWR-8X6X-PLVR","LQM-DONG-6QN7-3KSR-D48P","LQM-DONG-C4YH-LRG7-ALEU","LQM-DONG-VQ8U-DL5Z-G2S3","LQM-DONG-QCJU-55R6-TK3J","LQM-DONG-JZ5U-U44H-P794","LQM-DONG-HK6K-2MVL-NUF5","LQM-DONG-EA6A-GCZH-9XQN","LQM-DONG-RNMG-J7L6-BZJC","LQM-DONG-434S-Z22C-32BH","LQM-DONG-8E9K-32PL-HY7A","LQM-DONG-2H32-3CR4-DQ6W","LQM-DONG-DQMN-SGVL-KE34","LQM-DONG-T97L-RNPU-LMH3","LQM-DONG-W7F9-JDCV-UY3P","LQM-DONG-UE8L-4QMK-92F9","LQM-DONG-ARW4-QRXD-AU9K","LQM-DONG-H9DN-PJ5Y-WMFU","LQM-DONG-9N5A-PBPZ-YMBZ","LQM-DONG-BHU2-U6M5-XJBE","LQM-DONG-VUKB-EXGD-EWUY","LQM-DONG-32XF-D8Q4-QMF6","LQM-DONG-384W-22KZ-U2KQ","LQM-DONG-NX9C-SPFW-6N9S","LQM-DONG-JL9Q-SXCE-XNYB","LQM-DONG-42WX-6RCE-QHC7","LQM-DONG-J8TJ-BXVT-9XGD","LQM-DONG-BQA3-A96M-JZ4Z","LQM-DONG-ZMAN-TZVE-MBFY","LQM-DONG-F5VT-9J3H-2HGP","LQM-DONG-ZN37-222K-EGPR","LQM-DONG-XY8J-Y4K2-M8HK","LQM-DONG-YHWK-4J3S-H976","LQM-DONG-N9YA-WYSJ-RLWC","LQM-DONG-PL6H-LMMF-37DD","LQM-DONG-QSCF-5HSN-XEJ9","LQM-DONG-F7E7-B4BT-5QXJ","LQM-DONG-G5X5-Z283-D5VU","LQM-DONG-EVJH-98E7-CMZL","LQM-DONG-7RSU-EUBD-MZVB","LQM-DONG-HP33-VDMD-V6QH","LQM-DONG-3W8P-EAWF-LX99","LQM-DONG-E7A9-5J7S-NVGN","LQM-DONG-HU8F-G5V4-CTZT","LQM-DONG-UL3Q-47V8-YF6U","LQM-DONG-K5DK-5RMW-3WNW","LQM-DONG-27H8-RDZE-AQGJ","LQM-DONG-FK38-LFCM-8QHQ","LQM-DONG-B7BT-WH9E-VB5V","LQM-DONG-RMAM-4JWS-FCEZ","LQM-DONG-94CH-VAHS-XQ8K","LQM-DONG-V9SL-79CW-CBQK","LQM-DONG-SM77-ATLD-D3TJ","LQM-DONG-Y2RV-VWSH-VBTV","LQM-DONG-RC4V-P5PJ-E2VL","LQM-DONG-CHZC-HY89-M5CR","LQM-DONG-47DJ-ABLX-72GF","LQM-DONG-RJ7X-JHPX-4WSL","LQM-DONG-EHRF-MGJF-M9RK","LQM-DONG-F53W-RJVH-YANT","LQM-DONG-HYL4-D9QE-CWV6","LQM-DONG-HYEH-6CN3-S8FX","LQM-DONG-KB5Q-N4XP-Z5RL","LQM-DONG-6RSQ-YTRA-TQXK","LQM-DONG-WZLE-GQP2-UTUK","LQM-DONG-UPGG-ELLG-Q28S","LQM-DONG-XREV-XM3G-LDFT"],"bạc":["LQM-BAC-QRKT-U34A-24HY","LQM-BAC-8233-MY79-A6FS","LQM-BAC-XL8Z-2Q28-8ZPX","LQM-BAC-8AWQ-VUKX-2L33","LQM-BAC-B8QU-D8JF-3SJ8","LQM-BAC-7FSS-9U8J-MNJY","LQM-BAC-AD99-Z5HE-ZD26","LQM-BAC-ELYS-SKXT-L3CH","LQM-BAC-V7DN-NADU-CKPE","LQM-BAC-EA8Z-B546-JVV8","LQM-BAC-MTZW-D8SB-7UL2","LQM-BAC-XLC8-5D59-FKT3","LQM-BAC-HEN9-5GS6-WBQH","LQM-BAC-PFVB-FMFF-6H7X","LQM-BAC-QJ6S-XYNK-HSKT","LQM-BAC-XZUF-7PEG-2PK2","LQM-BAC-EZ8H-5K3N-3YWS","LQM-BAC-8W4N-T2LH-WNM2","LQM-BAC-9T6A-VNT6-APG9","LQM-BAC-3ZJV-E5A6-VAE6","LQM-BAC-EXG8-XU73-4UGA","LQM-BAC-XLLZ-2VDJ-4TUG","LQM-BAC-LJ5X-C4M4-7EZM","LQM-BAC-52DJ-UF5B-J7X9","LQM-BAC-34GC-YEKB-JDKD","LQM-BAC-FXZ7-CFB9-X4EK","LQM-BAC-7U8L-GLC3-B7BV","LQM-BAC-ZADH-RSQ7-EZBK","LQM-BAC-2DZY-4Q2C-8F26","LQM-BAC-FCLM-2HXA-5MW3","LQM-BAC-2UQQ-E7WR-E4JE","LQM-BAC-YC2K-ZZ8J-TA3B","LQM-BAC-8F6A-KJXG-U3MA","LQM-BAC-VN3Q-8FVD-BPW5","LQM-BAC-UR7F-HSJX-5MFL","LQM-BAC-2QS4-KPW6-UTFK","LQM-BAC-ZHYD-SEBC-59ST","LQM-BAC-APZS-3HKU-BBLT","LQM-BAC-PWJ3-7JE4-HGVK","LQM-BAC-Y7MY-NFP7-GRHN","LQM-BAC-J88E-88EJ-PQWU","LQM-BAC-VJCE-XW4L-LJTR","LQM-BAC-PULC-VLR4-6SYC","LQM-BAC-7QY6-9FTR-CPBK","LQM-BAC-A5DR-MBYM-VA5M","LQM-BAC-7SMZ-G4S2-BVP2","LQM-BAC-3WED-JR35-J2FA","LQM-BAC-XBB7-KVQU-RZNZ","LQM-BAC-FBMF-8WBM-TJJS","LQM-BAC-4DMJ-CBE2-5H8Y","LQM-BAC-HS4H-G4A9-BHJA","LQM-BAC-4G7S-PKD3-45Y2","LQM-BAC-5BSV-LGJQ-RCRT","LQM-BAC-3648-K8PX-EPQZ","LQM-BAC-RKUP-5LFY-GPV6","LQM-BAC-L7VY-BH6K-8QEL","LQM-BAC-CPCT-DX58-9JSB","LQM-BAC-FY4H-XT63-XTKQ","LQM-BAC-9SFS-9QYA-P3UV","LQM-BAC-LGGP-B9AD-USL3","LQM-BAC-YRKG-WUDD-ZVYS","LQM-BAC-FNLR-WGK3-3LM2","LQM-BAC-K94H-RT5D-9X5G","LQM-BAC-EY22-56PJ-GC3B","LQM-BAC-7858-P7D9-8Y9X","LQM-BAC-K27N-PDRE-DBTY","LQM-BAC-ZCLL-NXDT-BDUB","LQM-BAC-2N4R-GRKL-EAPH","LQM-BAC-K2BS-B4ST-Y5XR","LQM-BAC-2XFQ-B555-GJAR","LQM-BAC-96M7-XPVP-HQJR","LQM-BAC-DZ3H-Q3HL-LJD8","LQM-BAC-VXLH-LDEE-V5KS","LQM-BAC-3P87-QBLY-URW6","LQM-BAC-GWHV-3YLF-VQUE","LQM-BAC-HFZU-7NZQ-EZ5Q","LQM-BAC-2U8Q-FLLG-RFZA","LQM-BAC-YJ5Y-TTYK-JMN7","LQM-BAC-GRX4-G4BK-8XV7","LQM-BAC-DC4M-URNP-D64V","LQM-BAC-NDGJ-7VLU-3WHX","LQM-BAC-7QUF-RZAR-DT56","LQM-BAC-8MCG-77TW-HPQX","LQM-BAC-95DN-G2XN-SVCW","LQM-BAC-3MUW-4LFY-WM9K","LQM-BAC-47C6-WSQ4-F5KG","LQM-BAC-7BCN-AYN4-GT84","LQM-BAC-ZK3B-PX9Z-GNTH","LQM-BAC-C5FM-8TZA-E42Q","LQM-BAC-24L7-YH3G-SXAU","LQM-BAC-GD9L-NAK7-3HLG","LQM-BAC-NQ2S-5KGW-KFXR","LQM-BAC-KRWE-8JTW-4J3B","LQM-BAC-2D63-9NL2-A5SK","LQM-BAC-M3MZ-B49A-YGQB","LQM-BAC-LCLP-JMG8-DSFM","LQM-BAC-RU5D-C4ZW-2K8E","LQM-BAC-825U-W67G-V6HY","LQM-BAC-JU95-8R92-QTTR","LQM-BAC-ZXRR-M5YT-DBUL"],"vàng":["LQM-VANG-GHTK-JG5M-VTUV","LQM-VANG-ZQMU-FBJR-BK77","LQM-VANG-QYDE-DBUL-YW9W","LQM-VANG-VSGF-KP3R-7PHA","LQM-VANG-EK9W-MKUR-R49P","LQM-VANG-2BLG-DE5G-SQGK","LQM-VANG-2T8C-XHD8-M9PV","LQM-VANG-3XKJ-V46X-7UCU","LQM-VANG-7RUV-342V-DMFT","LQM-VANG-PRLY-EDG5-VZWK","LQM-VANG-V8XT-ZNBC-JMJZ","LQM-VANG-FXJS-ATV4-FXRJ","LQM-VANG-7Y3H-8TJF-P2LA","LQM-VANG-EHQC-WUYR-Z3JU","LQM-VANG-LHZF-TCGW-TK9G","LQM-VANG-NUY7-4ZAJ-BSMN","LQM-VANG-4XJW-HWN7-9FXQ","LQM-VANG-VCTP-BQTU-EX8Z","LQM-VANG-A89V-HFJF-VNST","LQM-VANG-YUHW-P2L7-ZYZ2","LQM-VANG-XHMV-8LU2-E6NE","LQM-VANG-4DZH-4HWR-L2Q5","LQM-VANG-KVRF-XHAT-PLFF","LQM-VANG-ZES9-ZNLQ-QSER","LQM-VANG-NQAQ-TJYZ-KP6F","LQM-VANG-DYCD-TTU6-99NW","LQM-VANG-YU4P-HC3B-T2SJ","LQM-VANG-V8XZ-EN5S-S7VT","LQM-VANG-7GKJ-5TPD-Z5YV","LQM-VANG-B22M-RUH2-PTLH","LQM-VANG-EMQD-RQ9L-TCV4","LQM-VANG-WPRD-652T-LLS6","LQM-VANG-WERN-FD8G-TUUS","LQM-VANG-BRJX-FAZB-ZR4J","LQM-VANG-NF29-D82T-2ZZA","LQM-VANG-N2FF-G7GW-J2WL","LQM-VANG-EQWT-8XMM-S4VL","LQM-VANG-M6RS-T8V9-EP8S","LQM-VANG-SU5C-M9UH-8R93","LQM-VANG-2ZEL-FHRJ-LK6W","LQM-VANG-D5QL-J76V-EYHN","LQM-VANG-5LS3-3FSJ-CJAV","LQM-VANG-PSXE-MTTD-NX6V","LQM-VANG-CCK3-38ZX-32AN","LQM-VANG-X5MJ-7NF9-VR6Z","LQM-VANG-66SF-UR37-QEC6","LQM-VANG-BA9R-ABKL-VUGX","LQM-VANG-Y4MJ-846D-JS24","LQM-VANG-RZGV-B59A-DY5V","LQM-VANG-NJJ2-MHF2-XMMH","LQM-VANG-QRB6-7HWZ-C7B8","LQM-VANG-28J4-4F2V-W9UT","LQM-VANG-5YEB-F5NQ-JXK4","LQM-VANG-55S2-NJ25-VJBT","LQM-VANG-UEKH-CPQP-82VQ","LQM-VANG-WK7E-WZTM-USYE","LQM-VANG-ATRF-BXQ3-HMGJ","LQM-VANG-FN29-RUSP-5TUP","LQM-VANG-FF8X-RC3R-2Q59","LQM-VANG-U974-Y9HH-KVLV","LQM-VANG-PJ8L-8DL3-A7ZR","LQM-VANG-FQBN-YV4U-UVGK","LQM-VANG-UNYP-EC3S-HZVY","LQM-VANG-BVLJ-NUVP-Y8BN","LQM-VANG-QSJV-XMRA-GVBM","LQM-VANG-E8XJ-EZAK-NBM6","LQM-VANG-WDV5-676P-M4BY","LQM-VANG-V5LX-GKVA-RHQJ","LQM-VANG-VNVH-23UJ-VRLN","LQM-VANG-C37Z-FNNL-27UA","LQM-VANG-WEBX-9WEE-3BC6","LQM-VANG-B9W8-K9NV-AEEL","LQM-VANG-9QDX-5XTT-222Z","LQM-VANG-J53R-YDU8-DA86","LQM-VANG-V9X7-S3N7-76XJ","LQM-VANG-2AKU-9AX8-LEDR","LQM-VANG-XY6J-LK8F-F5M2","LQM-VANG-TRRN-7EFH-U3HE","LQM-VANG-5WLM-MUTP-DQ29","LQM-VANG-9YGP-7NFR-2DYW","LQM-VANG-M49D-8JAQ-MAM9","LQM-VANG-KMGQ-HFWU-HWDH","LQM-VANG-NX58-RYHX-77QM","LQM-VANG-EGLQ-X82F-PJD7","LQM-VANG-6V6M-LUCK-GECW","LQM-VANG-4GVH-G46A-ND34","LQM-VANG-E5GH-WMQR-AZMF","LQM-VANG-HJTP-MEQY-Z8WJ","LQM-VANG-X5Y5-739L-ZS3P","LQM-VANG-8U7L-6UYM-5UXY","LQM-VANG-8VSY-XP4S-KM7Q","LQM-VANG-AVSY-FT49-SXPA","LQM-VANG-EJ93-SGBU-64DJ","LQM-VANG-ZYJE-FRM8-PBAD","LQM-VANG-7XSG-F98E-8MH2","LQM-VANG-NLRF-HDUC-PDNV","LQM-VANG-P3T6-M4C8-QEXJ","LQM-VANG-82ZU-AXTN-NWUH","LQM-VANG-BG4E-B9MH-48ZR","LQM-VANG-KXMK-VUWF-S9EW"]};
+
+const _CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+function _randSeg(len = 4) {
+  let s = '';
+  for (let i = 0; i < len; i++)
+    s += _CHARSET[Math.floor(Math.random() * _CHARSET.length)];
+  return s;
+}
+
+// Compute 4-char checksum from SHA-256
+async function _computeCheck(typePrefix, rand8) {
+  const data = `${CODE_SECRET_KEY}:${typePrefix}:${rand8}`;
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+  const bytes = new Uint8Array(buf);
+  let check = '';
+  for (let i = 0; i < 4; i++)
+    check += _CHARSET[bytes[i] % _CHARSET.length];
+  return check;
+}
+
+async function _makeCode(type) {
+  const pfx   = KEY_PREFIXES[type] || 'KEY';
+  const rand8 = _randSeg(4) + _randSeg(4);
+  const check = await _computeCheck(pfx, rand8);
+  return `LQM-${pfx}-${rand8.slice(0,4)}-${rand8.slice(4,8)}-${check}`;
+}
+
+// Returns key type string if valid, null if invalid
+async function _validateCode(code) {
+  const parts = code.toUpperCase().split('-');
+  // LQM - TYPE - R1 - R2 - CHECK  → 5 parts
+  if (parts.length !== 5 || parts[0] !== 'LQM') return null;
+  const pfx   = parts[1];
+  const type  = KEY_PREFIX_REVERSE[pfx];
+  if (!type) return null;
+  const rand8 = parts[2] + parts[3];
+  const given = parts[4];
+  if (rand8.length !== 8 || given.length !== 4) return null;
+  const expected = await _computeCheck(pfx, rand8);
+  return expected === given ? type : null;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SEED BATCH — Admin tạo 100 code mỗi loại thủ công
+// ═══════════════════════════════════════════════════════════
+async function seedBatch() {
+  if (!currentUser?.isAdmin) { showToast('❌ Chỉ admin!','error'); return; }
+  if (!confirm('Tạo 300 code mới (100 Đồng + 100 Bạc + 100 Vàng)?')) return;
+
+  const progBox  = document.getElementById('seed-progress');
+  const progFill = document.getElementById('seed-progress-fill');
+  const progText = document.getElementById('seed-progress-text');
+  progBox.style.display = '';
+
+  const TYPES = ['đồng','bạc','vàng'];
+  const COUNT = 100;
+  const TOTAL = TYPES.length * COUNT;
+  const now   = new Date().toISOString();
+  let done = 0;
+
+  for (const type of TYPES) {
+    for (let i = 0; i < COUNT; i++) {
+      const code = await _makeCode(type);
+      try {
+        await dbPut('keycodes', {
+          code, type,
+          note: `Seed batch — ${type.toUpperCase()}`,
+          created_by: currentUser.username,
+          created_at: now,
+        });
+      } catch(e) {}
+      done++;
+      const pct = Math.round(done / TOTAL * 100);
+      progFill.style.width = pct + '%';
+      progText.textContent = `Đang tạo... ${done}/${TOTAL} (${pct}%)`;
+      if (done % 30 === 0) await new Promise(r => setTimeout(r, 0)); // yield UI
+    }
+  }
+
+  setTimeout(() => { progBox.style.display = 'none'; progFill.style.width = '0%'; }, 1800);
+  progText.textContent = `✅ Hoàn tất 300 code!`;
+  showToast('✅ Đã seed 300 code mới!', 'success');
+  addLog(currentUser.username, currentUser.fullname||'admin', 'Seed batch 300 code (100x mỗi loại)', 'KEY');
+  renderAdminKeys();
+}
+
+async function exportAllUnusedCodes() {
+  if (!currentUser?.isAdmin) { showToast('❌ Chỉ admin!','error'); return; }
+  const all = await dbGetAll('keycodes');
+  const unused = all.filter(c => !c.used);
+  if (!unused.length) { showToast('⚠️ Không có code chưa dùng!','warn'); return; }
+
+  const byType = {'đồng':[],'bạc':[],'vàng':[]};
+  for (const c of unused) (byType[c.type] || (byType['khác'] = byType['khác']||[])).push(c.code);
+
+  const lines = [
+    '=== LQM KEY CODES — XUẤT TẤT CẢ CHƯA DÙNG ===',
+    `Xuất lúc: ${new Date().toLocaleString('vi-VN')}`,
+    `Tổng: ${unused.length} code`,
+    '═'.repeat(45),
+    '',
+    `🟤 ĐỒNG (${byType['đồng']?.length||0} code):`,
+    ...(byType['đồng']||[]),
+    '',
+    `⚪ BẠC (${byType['bạc']?.length||0} code):`,
+    ...(byType['bạc']||[]),
+    '',
+    `🟡 VÀNG (${byType['vàng']?.length||0} code):`,
+    ...(byType['vàng']||[]),
+    '',
+    '═'.repeat(45),
+    'Bot LQM — @motconboo'
+  ].join('\n');
+
+  const blob = new Blob([lines], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `lqm-all-unused-${Date.now()}.txt`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast(`💾 Xuất ${unused.length} code chưa dùng!`, 'success');
+}
+
+
+  if (!currentUser?.isAdmin) { showToast('❌ Chỉ admin!','error'); return; }
+  const type  = document.getElementById('genkey-type').value;
+  const count = Math.max(1, Math.min(100, +document.getElementById('genkey-count').value || 1));
+  const note  = document.getElementById('genkey-note').value.trim();
+
+  _lastGeneratedCodes = [];
+  for (let i = 0; i < count; i++) {
+    const code  = await _makeCode(type);
+    const entry = {
+      code, type, note,
+      created_by: currentUser.username,
+      created_at: new Date().toISOString(),
+    };
+    // Save to admin's local log (for display only)
+    await dbPut('keycodes', entry);
+    _lastGeneratedCodes.push(entry);
+  }
+
+  // Show result
+  const resEl   = document.getElementById('genkey-result');
+  const listEl  = document.getElementById('genkey-codes-list');
+  const titleEl = document.getElementById('genkey-result-title');
+  const countEl = document.getElementById('genkey-count-info');
+  resEl.style.display = '';
+
+  const typeEmoji = {'đồng':'🟤','bạc':'⚪','vàng':'🟡'}[type] || '🔑';
+  const typeColor = {'đồng':'var(--copper)','bạc':'var(--silver)','vàng':'var(--gold)'}[type] || 'var(--neon)';
+  if (titleEl) titleEl.innerHTML = `✅ Đã tạo <span style="color:${typeColor};font-weight:900">${count} code ${typeEmoji} ${type.toUpperCase()}</span>`;
+  if (countEl) countEl.textContent = `Tổng ${count} code • Tạo lúc ${new Date().toLocaleTimeString()}`;
+
+  listEl.innerHTML = _lastGeneratedCodes.map(e =>
+    `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--neon);flex:1;letter-spacing:1px;font-size:13px">${e.code}</span>
+      <span style="color:${typeColor};font-size:11px;font-weight:700">${typeEmoji} ${e.type?.toUpperCase()}</span>
+      <button onclick="navigator.clipboard.writeText('${e.code}').then(()=>showToast('📋 Copied!','success'))" class="btn btn-outline btn-sm" style="padding:3px 10px;font-size:11px">📋</button>
+    </div>`
+  ).join('');
+
+  showToast(`✅ Đã tạo ${count} code ${type}!`, 'success');
+  addLog(currentUser.username, currentUser.fullname||'admin', `Tạo ${count} code key ${type}`, 'KEY');
+  renderAdminKeys();
+}
+
+function copyAllCodes() {
+  const codes = _lastGeneratedCodes.map(e => e.code).join('\n');
+  navigator.clipboard.writeText(codes).then(() => showToast('📋 Đã copy tất cả!','success'));
+}
+
+function exportCodesToTxt() {
+  if (!_lastGeneratedCodes.length) { showToast('⚠️ Không có code!','warn'); return; }
+  const type = _lastGeneratedCodes[0]?.type || 'key';
+  const lines = [
+    `=== LQM KEY CODES — ${type.toUpperCase()} ===`,
+    `Tạo lúc: ${new Date().toLocaleString('vi-VN')}`,
+    `Số lượng: ${_lastGeneratedCodes.length}`,
+    `Ghi chú: ${_lastGeneratedCodes[0]?.note || '—'}`,
+    '─'.repeat(40),
+    ..._lastGeneratedCodes.map(e => e.code),
+    '─'.repeat(40),
+    'Bot LQM — @motconboo'
+  ].join('\n');
+  const blob = new Blob([lines], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `lqm-codes-${type}-${Date.now()}.txt`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('💾 Đã xuất file!','success');
+}
+
+async function redeemCode() {
+  const raw   = document.getElementById('redeem-code-input').value.trim().toUpperCase();
+  const msgEl = document.getElementById('redeem-msg');
+  msgEl.style.display = 'none';
+
+  if (!raw)          { showToast('⚠️ Nhập code!','warn'); return; }
+  if (!currentUser)  { showToast('❌ Chưa đăng nhập!','error'); return; }
+
+  const showMsg = (msg, color) => {
+    msgEl.style.display = 'block';
+    msgEl.style.color = color;
+    msgEl.textContent = msg;
+  };
+
+  // ── 1. Validate cryptographic signature ─────────────────
+  const type = await _validateCode(raw);
+  if (!type) {
+    showMsg('❌ Code không hợp lệ hoặc sai!','var(--red)');
+    return;
+  }
+
+  // ── 2. Check if already used on this device ──────────────
+  const usedEntry = await dbGet('keycodes_used', raw);
+  if (usedEntry) {
+    showMsg(`❌ Code này đã được dùng lúc ${(usedEntry.used_at||'').slice(0,16).replace('T',' ')}`, 'var(--red)');
+    return;
+  }
+
+  // ── 3. Apply key to inventory ─────────────────────────────
+  const kd = await getKeyData(currentUser.username);
+  kd.inventory[type] = (kd.inventory[type] || 0) + 1;
+  await dbPut('keys', kd);
+
+  // ── 4. Mark used locally ──────────────────────────────────
+  await dbPut('keycodes_used', {
+    code: raw,
+    type,
+    used_by: currentUser.username,
+    used_at: new Date().toISOString(),
+  });
+
+  // ── 5. Also update admin log if present ──────────────────
+  const adminEntry = await dbGet('keycodes', raw);
+  if (adminEntry) {
+    adminEntry.used = true;
+    adminEntry.used_by = currentUser.username;
+    adminEntry.used_at = new Date().toISOString();
+    await dbPut('keycodes', adminEntry);
+  }
+
+  await logKeyHistory(currentUser.username, 'redeem_code', type, 1);
+  document.getElementById('redeem-code-input').value = '';
+  const dur = formatDuration(KEY_HOURS[type] * 3600);
+  showMsg(`✅ Đổi code thành công! +1 Key ${type} (${dur}) vào kho!`, 'var(--green)');
+  showToast(`🎉 +1 Key ${type} (${dur}) đã vào kho!`, 'success');
+  addLog(currentUser.username, currentUser.fullname||currentUser.username, `Đổi code ${raw} → Key ${type}`, 'KEY');
+  updateKeyStatus();
+}
+
+let _codeFilterVal = 'all';
+function filterCodes(el) {
+  document.querySelectorAll('[data-cfilter]').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  _codeFilterVal = el.dataset.cfilter;
+  renderAdminKeys();
+}
+
+async function deleteUsedCodes() {
+  if (!confirm('Xóa tất cả code đã dùng?')) return;
+  const all = await dbGetAll('keycodes');
+  for (const c of all) if (c.used) await dbDelete('keycodes', c.code);
+  showToast('🗑️ Đã xóa code đã dùng','info');
+  renderAdminKeys();
+}
+
+async function deleteCode(code) {
+  if (!confirm(`Xóa code ${code}?`)) return;
+  await dbDelete('keycodes', code);
+  showToast('🗑️ Đã xóa code', 'info');
+  renderAdminKeys();
+}
+
+async function renderAdminKeys() {
+  // ── Render codes table ──────────────────────────────────────
+  const allCodes = await dbGetAll('keycodes');
+  allCodes.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+  const filtered = allCodes.filter(c => {
+    if (_codeFilterVal === 'unused') return !c.used;
+    if (_codeFilterVal === 'used')   return  c.used;
+    return true;
+  });
+
+  const typeEmoji = {'đồng':'🟤','bạc':'⚪','vàng':'🟡'};
+  const typeColor = {'đồng':'var(--copper)','bạc':'var(--silver)','vàng':'var(--gold)'};
+  const codesTbody = document.getElementById('codes-table-body');
+  if (codesTbody) {
+    codesTbody.innerHTML = filtered.length ? filtered.map(c => `
+      <tr>
+        <td>
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--neon);letter-spacing:1px">${c.code}</span>
+          <button onclick="navigator.clipboard.writeText('${c.code}').then(()=>showToast('📋 Đã copy!','success'))"
+            style="background:none;border:none;cursor:pointer;color:var(--text2);margin-left:4px;font-size:12px" title="Copy">📋</button>
+        </td>
+        <td><span style="color:${typeColor[c.type]||'var(--text)'};font-weight:700">${typeEmoji[c.type]||'🔑'} ${c.type?.toUpperCase()}</span></td>
+        <td>${c.used
+            ? `<span style="color:var(--red);font-weight:700">✅ Đã dùng</span>`
+            : `<span style="color:var(--green);font-weight:700">🟢 Chưa dùng</span>`}</td>
+        <td style="font-size:12px;color:var(--text2)">${c.used ? `@${c.used_by||'?'}` : '—'}</td>
+        <td style="font-size:11px;font-family:var(--font-mono);color:var(--text3)">${(c.created_at||'').slice(0,16).replace('T',' ')}</td>
+        <td style="font-size:12px;color:var(--text2)">${c.note||'—'}</td>
+        <td>${!c.used ? `<button class="btn btn-red btn-sm" onclick="deleteCode('${c.code}')">🗑️</button>` : ''}</td>
+      </tr>`).join('') :
+      '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">Chưa có code nào</td></tr>';
+  }
+
+  // ── Render users-with-key table ─────────────────────────────
+  const allUsers = await dbGetAll('users');
+  const allKeys  = await dbGetAll('keys');
+  const tbody    = document.getElementById('keylist-body');
+  const usersWithKey = [];
+
+  for (const u of allUsers) {
+    const kd = allKeys.find(k => k.uid === u.username);
+    if (!kd) continue;
+    const rem = getRemainingSeconds(kd);
+    const inv = kd.inventory || {};
+    const hasAny = rem > 0 || (inv['đồng']||0) + (inv['bạc']||0) + (inv['vàng']||0) > 0;
+    if (hasAny) usersWithKey.push({u, kd, rem, inv});
+  }
+
+  if (tbody) {
+    tbody.innerHTML = usersWithKey.length ? usersWithKey.map(({u, rem, inv}) => `
+      <tr>
+        <td><strong>${u.fullname||u.username}</strong><br><span style="font-size:11px;color:var(--text2)">@${u.username}</span></td>
+        <td style="font-size:13px">${rem > 0 ? `<span style="color:var(--green)">✅ ${formatDuration(rem)}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px">🟤${inv['đồng']||0} ⚪${inv['bạc']||0} 🟡${inv['vàng']||0}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-green btn-sm" onclick="quickAddKey('${u.username}')">➕</button>
+            <button class="btn btn-red btn-sm" onclick="adminRemoveKeyFor('${u.username}')">🗑️</button>
+          </div>
+        </td>
+      </tr>`).join('') :
+      '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">Không có user nào có key</td></tr>';
+  }
+
+  // ── Badge sidebar ───────────────────────────────────────────
+  const unusedCount = allCodes.filter(c => !c.used).length;
+  const badge = document.getElementById('nav-badge-codes');
+  if (badge) {
+    badge.textContent = unusedCount > 0 ? unusedCount : '';
+    badge.style.display = unusedCount > 0 ? '' : 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LOGS
+// ═══════════════════════════════════════════════════════════
+const LEVEL_COLORS = {
+  INFO: 'var(--neon)', FILE: 'var(--green)', KEY: 'var(--gold)',
+  WARN: 'var(--orange)', ERROR: 'var(--red)', SPAM: 'var(--pink)', CMD: '#7788ff'
+};
+
+async function addLog(user, name, msg, level = 'INFO') {
+  try {
+    await dbAdd('logs', {
+      time: new Date().toISOString(), user, name, msg, level
+    });
+  } catch(e) {
+    // DB might have too many logs, silent fail
+  }
+}
+
+async function renderLogs() {
+  const logs = await dbGetAll('logs');
+  logs.sort((a,b) => new Date(b.time) - new Date(a.time));
+  const recent = logs.slice(0, 100);
+
+  const area = document.getElementById('log-area');
+  if (!recent.length) {
+    area.innerHTML = '<div class="log-line"><span class="log-time">--:--:--</span><span class="log-level-INFO">INFO</span><span class="log-msg">Hệ thống sẵn sàng...</span></div>';
+    return;
+  }
+  area.innerHTML = recent.map(l => `
+    <div class="log-line">
+      <span class="log-time">${(l.time||'').slice(11,19)}</span>
+      <span style="color:${LEVEL_COLORS[l.level]||'var(--text)'};font-weight:700;width:40px;display:inline-block">${l.level||'?'}</span>
+      <span class="log-user">${l.name||l.user||'?'}</span>
+      <span class="log-msg"> ${l.msg||''}</span>
+    </div>`).join('');
+  area.scrollTop = 0;
+}
+
+async function clearLogs() {
+  const allLogs = await dbGetAll('logs');
+  for (const l of allLogs) await dbDelete('logs', l.id);
+  renderLogs();
+  showToast('🗑️ Đã xóa log', 'info');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BROADCAST
+// ═══════════════════════════════════════════════════════════
+function previewBroadcast() {
+  const msg = document.getElementById('broadcast-msg').value;
+  document.getElementById('broadcast-preview').textContent = msg || '...';
+}
+
+async function addBroadcast(msg, targetUser = null) {
+  await dbAdd('broadcasts', {
+    time: new Date().toISOString(), msg,
+    from: currentUser?.username || 'system',
+    target: targetUser || 'all'
+  });
+}
+
+async function sendBroadcast() {
+  const msg = document.getElementById('broadcast-msg').value.trim();
+  if (!msg) { showToast('⚠️ Nhập nội dung!', 'warn'); return; }
+
+  const allUsers = await dbGetAll('users');
+  await addBroadcast(msg);
+
+  document.getElementById('broadcast-result').innerHTML =
+    `<span style="color:var(--green)">✅ Đã ghi nhận broadcast đến ${allUsers.length} users lúc ${new Date().toLocaleTimeString()}</span>`;
+
+  addLog(currentUser.username, currentUser.fullname, `Broadcast: "${msg.slice(0,40)}..."`, 'INFO');
+  showToast(`📢 Broadcast ghi nhận thành công!`, 'success');
+  renderBroadcastHistory();
+}
+
+async function renderBroadcastHistory() {
+  const all = await dbGetAll('broadcasts');
+  all.sort((a,b) => new Date(b.time) - new Date(a.time));
+  const hist = document.getElementById('broadcast-history');
+  if (!all.length) {
+    hist.innerHTML = '<p style="text-align:center;padding:16px;color:var(--text3)">Chưa có</p>';
+    return;
+  }
+  hist.innerHTML = all.slice(0,20).map(b => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:700;color:var(--neon)">📢 ${b.target === 'all' ? 'Tất cả' : '@'+b.target}</span>
+        <span style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">${b.time?.slice(0,19).replace('T',' ')}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text)">${b.msg}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MODAL HELPERS
+// ═══════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  const icons = {success:'✅', error:'❌', info:'ℹ️', warn:'⚠️'};
+  el.innerHTML = `<span>${icons[type]||'•'}</span><span>${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = 'all .3s';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+</script>
+</body>
+</html>
